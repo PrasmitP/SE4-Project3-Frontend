@@ -15,7 +15,7 @@ const router = createRouter({
     },
     {
       path: "/build",
-      name: "bbuild",
+      name: "build",
       component: BuilderView,
       props: true,
     },
