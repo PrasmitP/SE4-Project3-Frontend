@@ -4,6 +4,12 @@
             <v-col>
                 <h1>New Resume</h1>
                 <v-text-field label="File Name" type="text"></v-text-field>
+                <v-row>
+                    <resume />
+                    <resume />
+                    <resume />
+                    <resume />
+                </v-row>
                 <v-form>
                     <v-card>
                         <v-card-title>
@@ -31,7 +37,7 @@
                         <v-text-field label="Degree *" type="text" required></v-text-field>
                         <v-text-field label="GPA *" type="number" required></v-text-field>
                         <v-text-field label="Awards" type="text"></v-text-field>
-                        <v-text-field label="Coursework" type="text"></v-text-field>        
+                        <v-text-field label="Coursework" type="text"></v-text-field>
                         <v-card-title>
                             <h2>Professional Experience</h2>
                         </v-card-title>
@@ -41,7 +47,8 @@
                         <v-text-field label="End Date *" type="month" required></v-text-field>
                         <v-text-field label="City *" required></v-text-field>
                         <v-select label="State *" :items="statesShort" required></v-select>
-                        <v-textarea label="Accomplishment " placeholder="Accomplished {X} as measured by {Y}, by doing {Z} | Action + Project/Problem + Results = Accomplishment"></v-textarea>
+                        <v-textarea label="Accomplishment "
+                            placeholder="Accomplished {X} as measured by {Y}, by doing {Z} | Action + Project/Problem + Results = Accomplishment"></v-textarea>
                         <v-btn>+</v-btn>
                         <v-card-title>
                             <h2>Skills</h2>
@@ -60,7 +67,7 @@
     </v-container>
 </template>
 
-<script>            
+<script>
 
 export default {
     setup() {
