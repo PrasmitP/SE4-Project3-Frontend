@@ -1,28 +1,49 @@
 <template>
     <div class="wrapper">
         <div class="resumePreview" @click="goToBuild">
-            <div v-if="!props.name" class="circle">
+            <div v-if="name === 'New Resume'" class="circle">
                 <div class="plusSign">+</div>
             </div>
         </div>
         <p>{{ resumeName }}</p>
+
+        <!--Download PDF Button-->
+        <v-btn v-if="name !== 'New Resume'" color="primary" @click="generatePDF">Download Resume as PDF</v-btn>
     </div>
 </template>
 
 <script setup>
+// Import for PDF
+import { jsPDF } from 'jspdf';
+
 import { useRouter } from 'vue-router';
 
 const props = defineProps({
     name: {
         type: String,
+        default: "New Resume"
     }
 });
 
-let resumeName = props.name || "New Resume"; 
+let resumeName = props.name; 
 
 const router = useRouter();
 const goToBuild = () => {
     router.push('/build');
+}
+
+// Function for PDF
+const generatePDF = () => {
+    const doc = new jsPDF();
+
+    // Add Content
+    doc.setFontSize(12);
+    doc.text("Resume Name: {resumeName}", 10, 10);
+    doc.text("Input resume content here...",10, 20);
+
+    // Save/Download
+    const fileName = resumeName || "New Resume";
+    doc.save('${fileName}.pdf');
 }
 </script>
 
