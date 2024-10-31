@@ -1,13 +1,22 @@
 <template>
+    <ResumePreview v-if="showPreview" @hidePreviewEmit="showPreview = false" />
     <v-container>
         <h1>Your Resumes</h1>
         <v-row>
             <Resume />
-            <Resume v-for = "resumeName in resumeNames" :name="resumeName" />
+            <Resume v-for="resumeObject in resumeObjects" :resumeObject="resumeObject"
+                @showPreviewEmit="showPreview = true" />
         </v-row>
     </v-container>
 </template>
 <script setup>
-const resumeNames = ["MyResume1", "MyResume2", "MyResume3"];
+import { ref } from 'vue';
+
+let showPreview = ref(false);
+
+const resumeObjects = [
+    { resumeName: "MyResume1", exampleText: "Example Text. This should have a preview of the resume" },
+    { resumeName: "MyResume2", exampleText: "Resume can be stored either as image or html content" },
+    { resumeName: "MyResume3", exampleText: "all resumes should have 4 options: edit, delete, download (pdf) and expanded preview" }];
 </script>
 <style scoped></style>
