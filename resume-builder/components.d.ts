@@ -12,5 +12,6 @@ declare module 'vue' {
     Resume: typeof import('./src/components/Resume.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SocialLogin: typeof import('./src/components/SocialLogin.vue')['default']
   }
 }

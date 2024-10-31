@@ -8,7 +8,6 @@
 import { registerPlugins } from '@/plugins'
 
 // Components
-import Vue from 'vue'
 import App from './App.vue'
 
 // Composables
@@ -21,9 +20,6 @@ const app = createApp(App).use(createPinia())
 registerPlugins(app)
 
 app.mount('#app')
-
-
-import GoogleAuth from '@/config/google_oAuth.js'
 const gauthOption = {
   clientId: '209811569480-gob89jfqps61m9nsiv0gm53n3n4g89u1.apps.googleusercontent.com',
   scope: 'profile email',
@@ -37,3 +33,4 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
+
