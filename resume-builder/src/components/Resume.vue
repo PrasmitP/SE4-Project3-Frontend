@@ -1,8 +1,17 @@
 <template>
-    <div class="wrapper">
+    <div class="wrapper" @mouseover="showIconRow=true" @mouseout="showIconRow=false">
+        <IconRow :style="{
+            visibility: showIconRow && !newResumeBool ? 'visible' : 'hidden',
+        }"/>
         <div class="resumePreview" @click="goToBuild">
-            <div v-if="!props.name" class="circle">
+
+            <div v-if="!props.resumeObject" class="circle">
                 <div class="plusSign">+</div>
+            </div>
+            
+            <div v-else>
+                <p class="textInside">{{ props.resumeObject.exampleText }}</p>
+            
             </div>
         </div>
         <p>{{ resumeName }}</p>
@@ -11,14 +20,17 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 
 const props = defineProps({
-    name: {
-        type: String,
+    resumeObject: {
+        type: Object,
     }
 });
 
-let resumeName = props.name || "New Resume"; 
+let newResumeBool = props.resumeObject ? false : true;
+let resumeName = newResumeBool ? "New Resume" : props.resumeObject.resumeName;
+let showIconRow = ref(false);
 
 const router = useRouter();
 const goToBuild = () => {
@@ -32,14 +44,18 @@ p {
     font-size: 12px;
 }
 
+.textInside {
+    font-size: 12px;
+    color: black;
+}
+
 .wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 10px;
+    margin:  3px;
     width: fit-content;
 }
-
 .resumePreview {
     width: 90px;
     height: 160px;

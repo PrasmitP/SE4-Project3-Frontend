@@ -31,7 +31,7 @@
                         <v-text-field label="Degree *" type="text" required></v-text-field>
                         <v-text-field label="GPA *" type="number" required></v-text-field>
                         <v-text-field label="Awards" type="text"></v-text-field>
-                        <v-text-field label="Coursework" type="text"></v-text-field>        
+                        <v-text-field label="Coursework" type="text"></v-text-field>
                         <v-card-title>
                             <h2>Professional Experience</h2>
                         </v-card-title>
@@ -41,7 +41,8 @@
                         <v-text-field label="End Date *" type="month" required></v-text-field>
                         <v-text-field label="City *" required></v-text-field>
                         <v-select label="State *" :items="statesShort" required></v-select>
-                        <v-textarea label="Accomplishment " placeholder="Accomplished {X} as measured by {Y}, by doing {Z} | Action + Project/Problem + Results = Accomplishment"></v-textarea>
+                        <v-textarea label="Accomplishment "
+                            placeholder="Accomplished {X} as measured by {Y}, by doing {Z} | Action + Project/Problem + Results = Accomplishment"></v-textarea>
                         <v-btn>+</v-btn>
                         <v-card-title>
                             <h2>Skills</h2>
@@ -52,7 +53,7 @@
                         <v-select label="Proficiency Level" :items="proficiencyLevels"></v-select>
                         <v-btn>+</v-btn>
                         <v-spacer></v-spacer>
-                        <v-btn>Generate Resume</v-btn>
+                        <v-btn to="build/saved">Generate Resume</v-btn>
                     </v-card>
                 </v-form>
             </v-col>
@@ -60,7 +61,7 @@
     </v-container>
 </template>
 
-<script>            
+<script>
 
 export default {
     setup() {
