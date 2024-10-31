@@ -4,12 +4,6 @@
             <v-col>
                 <h1>New Resume</h1>
                 <v-text-field label="File Name" type="text"></v-text-field>
-                <v-row>
-                    <resume />
-                    <resume />
-                    <resume />
-                    <resume />
-                </v-row>
                 <v-form>
                     <v-card>
                         <v-card-title>
@@ -59,7 +53,7 @@
                         <v-select label="Proficiency Level" :items="proficiencyLevels"></v-select>
                         <v-btn>+</v-btn>
                         <v-spacer></v-spacer>
-                        <v-btn>Generate Resume</v-btn>
+                        <v-btn to="build/saved">Generate Resume</v-btn>
                     </v-card>
                 </v-form>
             </v-col>
