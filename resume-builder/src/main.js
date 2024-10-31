@@ -8,6 +8,7 @@
 import { registerPlugins } from '@/plugins'
 
 // Components
+//import Vue from 'vue'
 import App from './App.vue'
 
 // Composables

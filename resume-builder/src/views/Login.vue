@@ -5,7 +5,7 @@ import SocialLogin from "../components/SocialLogin.vue";
 <template>
   <v-container>
     <v-toolbar>
-      <v-toolbar-title>Login!</v-toolbar-title>
+      <v-toolbar-title><center>Welcome to resume builder login!</center></v-toolbar-title>
     </v-toolbar>
     <br /><br />
     <SocialLogin />
