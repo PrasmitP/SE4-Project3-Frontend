@@ -3,9 +3,14 @@
     <v-container>
         <h1>Your Resumes</h1>
         <v-row>
+
             <Resume />
             <Resume v-for="resumeObject in resumeObjects" :resumeObject="resumeObject"
                 @showPreviewEmit="showPreview = true" />
+
+            <!-- <Resume /> 
+             <Resume name="New Resume" />
+            <Resume v-for = "resumeName in resumeNames" :key="resumeName" :name="resumeName" /> -->
         </v-row>
     </v-container>
 </template>
