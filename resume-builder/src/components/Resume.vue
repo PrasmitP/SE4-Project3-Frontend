@@ -3,15 +3,14 @@
         <IconRow :style="{
             visibility: showIconRow && !newResumeBool ? 'visible' : 'hidden',
         }"/>
-        <div class="resumePreview" @click="goToBuild">
-
-            <div v-if="!props.resumeObject" class="circle">
-                <div class="plusSign">+</div>
-            </div>
-            
-            <div v-else>
+        <div class="resumePreview" v-if="props.resumeObject" @click="$emit('showPreviewEmit')">
+            <div>
                 <p class="textInside">{{ props.resumeObject.exampleText }}</p>
-            
+            </div>
+        </div>
+        <div class="resumePreview" v-else @click="goToBuild">
+            <div class="circle">
+                <v-icon class="plusSign">mdi-plus</v-icon>
             </div>
         </div>
         <p>{{ resumeName }}</p>
@@ -28,6 +27,7 @@ const props = defineProps({
     }
 });
 
+let previewResume = ref(false);
 let newResumeBool = props.resumeObject ? false : true;
 let resumeName = newResumeBool ? "New Resume" : props.resumeObject.resumeName;
 let showIconRow = ref(false);
