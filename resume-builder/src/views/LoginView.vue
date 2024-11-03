@@ -1,5 +1,14 @@
+<script setup>
+import SocialLogin from "../components/SocialLogin.vue";
+</script>
+
 <template>
-    <h1>login</h1>
+  <v-container>
+    <v-toolbar>
+      <v-toolbar-title><center>Welcome to resume builder login!</center></v-toolbar-title>
+    </v-toolbar>
+    <br /><br />
+    <SocialLogin />
+    <br /><br />
+  </v-container>
 </template>
-<script></script>
-<style scoped></style>
