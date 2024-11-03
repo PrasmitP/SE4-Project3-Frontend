@@ -1,8 +1,20 @@
 <template>
-    <div class="wrapper">
+    <div class="wrapper" @mouseover="showIconRow=true" @mouseout="showIconRow=false">
+        <IconRow :style="{
+            visibility: showIconRow && !newResumeBool ? 'visible' : 'hidden',
+        }"/>
+        <div class="resumePreview" v-if="props.resumeObject" @click="$emit('showPreviewEmit')">
+            <div>
+                <p class="textInside">{{ props.resumeObject.exampleText }}</p>
+            </div>
+        </div>
+        <div class="resumePreview" v-else @click="goToBuild">
+            <div class="circle">
+                <v-icon class="plusSign">mdi-plus</v-icon>
+    <!-- <div class="wrapper">
         <div class="resumePreview" @click="goToBuild">
             <div v-if="name === 'New Resume'" class="circle">
-                <div class="plusSign">+</div>
+                <div class="plusSign">+</div> -->
             </div>
         </div>
         <p>{{ resumeName }}</p>
@@ -17,15 +29,27 @@
 import { jsPDF } from 'jspdf';
 
 import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 
 const props = defineProps({
-    name: {
+
+    resumeObject: {
+        type: Object,
+    }
+});
+
+let previewResume = ref(false);
+let newResumeBool = props.resumeObject ? false : true;
+let resumeName = newResumeBool ? "New Resume" : props.resumeObject.resumeName;
+let showIconRow = ref(false);
+
+<!--    name: {
         type: String,
         default: "New Resume"
     }
 });
 
-let resumeName = props.name; 
+let resumeName = props.name;  -->
 
 const router = useRouter();
 const goToBuild = () => {
@@ -140,14 +164,18 @@ p {
     font-size: 12px;
 }
 
+.textInside {
+    font-size: 12px;
+    color: black;
+}
+
 .wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 10px;
+    margin:  3px;
     width: fit-content;
 }
-
 .resumePreview {
     width: 90px;
     height: 160px;
