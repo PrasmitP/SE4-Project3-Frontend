@@ -1,6 +1,6 @@
 <template>
-    <ResumePreview v-if="showPreview" @hidePreviewEmit="showPreview = false" />
     <v-container>
+        <ResumePreview v-if="showPreview" @hidePreviewEmit="showPreview = false" />
         <h1>Your Resumes</h1>
         <v-row>
             <Resume />
