@@ -1,25 +1,22 @@
 <template>
-    <v-row class="iconRow">
+    <div class="iconRow">
         <v-icon @click="goToBuild">mdi-pencil</v-icon>
         <v-icon @click="downloadPDF">mdi-download</v-icon>
         <v-icon @click="deleteResume">mdi-delete</v-icon>
-    </v-row>
+    </div>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { jsPDF } from 'jspdf';
+import { defineProps } from 'vue';
 
 const props = defineProps({
-    resumeObject: {
-        type: Object
-    },
-    resumeName: {
+    size: {
         type: String,
-        default: 'New Resume'
+        optional: true,
     }
 });
-// I should probably have these in the services folder
+
 const router = useRouter(); 
 const goToBuild = () => {
     router.push('/build');
@@ -137,7 +134,6 @@ const downloadPDF = () => {
     z-index: 1;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     scale: 0.75;
-    margin: 0;
 }
 .v-icon {
     cursor: pointer;

@@ -1,11 +1,11 @@
 <template>
-    <ResumePreview v-if="showPreview" @hidePreviewEmit="showPreview = false" />
     <v-container>
+        <ResumePreview v-if="showPreview" @hidePreviewEmit="showPreview = false" />
         <h1>Your Resumes</h1>
         <v-row>
-            <Resume name="New Resume"/>
-            <Resume v-for="resumeObject in resumeObjects" :key="resumeObject.resumeName" :resumeObject="resumeObject" :resumeName="resumeObject.resumeName" 
-            @showPreviewEmit="showPreview = true" />
+            <Resume />
+            <Resume v-for="resumeObject in resumeObjects" :resumeObject="resumeObject"
+                @showPreviewEmit="showPreview = true" />
         </v-row>
     </v-container>
 </template>

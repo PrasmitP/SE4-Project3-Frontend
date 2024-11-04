@@ -18,7 +18,6 @@
 </template>
 
 <script setup>
-import IconRow from './IconRow.vue';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 
@@ -40,8 +39,7 @@ let showIconRow = ref(false);
 const router = useRouter();
 const goToBuild = () => {
     router.push('/build');
-};
-
+}
 </script>
 
 <style scoped>
