@@ -1,55 +1,49 @@
+<!-- TemplateSwitcher.vue -->
 <template>
-    <div class="template-switcher">
-      <label for="templateSelect">Select Resume Template:</label>
-      <select id="templateSelect" v-model="selectedTemplate" @change="switchTemplate" class="template-select">
-        <option disabled value="">Select a template</option> 
-        <option v-for="template in templates" :key="template.id" :value="template.id">
-          {{ template.name }}
-        </option>
-      </select>
-    </div>
+    <v-row class="template-row" justify="center">
+      <v-col cols="3" v-for="template in templates" :key="template.id" class="template-box">
+        <v-card outlined @click="selectTemplate(template.id)" class="template-card">
+          <v-card-title class="d-flex justify-center">
+            <v-icon large>mdi-plus</v-icon>
+          </v-card-title>
+          <v-card-subtitle class="text-center">{{ template.name }}</v-card-subtitle>
+        </v-card>
+      </v-col>
+    </v-row>
   </template>
   
   <script>
   export default {
     data() {
       return {
-        selectedTemplate: null,
         templates: [
-          { id: 'templateOne', name: 'Resume 1' },
-          { id: 'templateTwo', name: 'Resume 2' },
-          { id: 'templateThree', name: 'Resume 3' },
-          { id: 'templateFour', name: 'Resume 4' }
-        ]
+          { id: 'templateOne', name: 'Template One' },
+          { id: 'templateTwo', name: 'Template Two' },
+          { id: 'templateThree', name: 'Template Three' },
+          { id: 'templateFour', name: 'Template Four' },
+        ],
       };
     },
     methods: {
-      switchTemplate() {
-        console.log("Selected template:", this.selectedTemplate);
-        this.$emit('template-selected', this.selectedTemplate);
-      }
-    }
+      selectTemplate(templateId) {
+        this.$emit('template-selected', templateId);
+      },
+    },
   };
   </script>
   
   <style scoped>
-  .template-switcher {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  .template-row {
+    margin-top: 20px;
   }
-  
-  .template-select {
-    background-color: #ffffff; 
-    color: #333;              
-    padding: 8px 12px;       
-    border: 1px solid #ccc;  
-    border-radius: 4px;      
-    transition: border-color 0.2s; 
+  .template-box {
+    text-align: center;
   }
-  
-  .template-select:focus {
-    border-color: #007BFF; 
-    outline: none;         
+  .template-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .template-card:hover {
+    transform: scale(1.05);
   }
   </style>
