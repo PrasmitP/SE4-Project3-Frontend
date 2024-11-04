@@ -1,6 +1,6 @@
 <template>
     <div class="wrapper" @mouseover="showIconRow=true" @mouseout="showIconRow=false">
-        <IconRow :style="{
+        <IconRow :resumeName="resumeName" :style="{
             visibility: showIconRow && !newResumeBool ? 'visible' : 'hidden',
         }"/>
         <div class="resumePreview" v-if="props.resumeObject" @click="$emit('showPreviewEmit')">
@@ -23,7 +23,11 @@ import { ref } from 'vue';
 
 const props = defineProps({
     resumeObject: {
-        type: Object,
+        type: Object
+    },
+    resumeName: {
+        type: String,
+        default: "New Resume"
     }
 });
 
