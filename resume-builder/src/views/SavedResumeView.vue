@@ -5,10 +5,27 @@
         <h2>Ai Suggestions</h2>
         <p>ai suggestion text should go here</p>
         <v-btn>Edit</v-btn>
-        <v-btn>Download PDF</v-btn>
+        <v-btn @click="downloadPDF">Download PDF</v-btn>
     </v-container>
 </template>
-<script setup></script>
+<script setup>
+import { generatePDF } from '../components/PDFDownloader.vue';
+
+const props = defineProps({
+    resumeData: {
+        type: Object,
+        default: () => ({})
+    },
+    resumeName: {
+        type: String,
+        default: 'Resume'
+    },
+});
+
+const downloadPDF = () => {
+    generatePDF(props.resumeData, props.resumeName);
+};
+</script>
 <style scoped>
 .resumePreview{
     border: 1px solid black;
