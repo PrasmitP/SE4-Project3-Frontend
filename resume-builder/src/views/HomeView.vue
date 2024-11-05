@@ -1,22 +1,64 @@
 <template>
     <v-container>
-        <ResumePreview v-if="showPreview" @hidePreviewEmit="showPreview = false" />
-        <h1>Your Resumes</h1>
-        <v-row>
-            <Resume />
-            <Resume v-for="resumeObject in resumeObjects" :resumeObject="resumeObject"
-                @showPreviewEmit="showPreview = true" />
-        </v-row>
+      <h1>Your Resumes</h1>
+      <v-btn text to="/build" class="no-highlight" @click="navigateToBuilder">
+        New Resume
+      </v-btn>
+  
+      <!-- Template selection -->
+      <TemplateSwitcher @template-selected="onTemplateSelected" />
+  
+      <!-- Optional: Show selected template info if needed -->
+      <div v-if="selectedTemplate">
+        <p>Selected Template: {{ selectedTemplateName }}</p>
+      </div>
     </v-container>
-</template>
-<script setup>
-import { ref } from 'vue';
-
-let showPreview = ref(false);
-
-const resumeObjects = [
-    { resumeName: "MyResume1", exampleText: "Example Text. This should have a preview of the resume" },
-    { resumeName: "MyResume2", exampleText: "Resume can be stored either as image or html content" },
-    { resumeName: "MyResume3", exampleText: "all resumes should have 4 options: edit, delete, download (pdf) and expanded preview" }];
-</script>
-<style scoped></style>
+  </template>
+  
+  <script>
+  import TemplateSwitcher from '@/components/TemplateSwitcher.vue';
+  
+  export default {
+    components: {
+      TemplateSwitcher
+    },
+    data() {
+      return {
+        selectedTemplate: null, // Track selected template ID
+        selectedTemplateName: ''
+      };
+    },
+    methods: {
+      onTemplateSelected(templateId) {
+        this.selectedTemplate = templateId;
+        this.selectedTemplateName = this.getTemplateName(templateId);
+      },
+      getTemplateName(templateId) {
+        const templates = {
+          templateOne: 'Template One',
+          templateTwo: 'Template Two',
+          templateThree: 'Template Three',
+          templateFour: 'Template Four'
+        };
+        return templates[templateId] || 'Default Template';
+      },
+      navigateToBuilder() {
+        if (this.selectedTemplate) {
+          this.$router.push({
+            name: 'BuilderView', // Make sure BuilderView has this route name in your router config
+            params: { templateId: this.selectedTemplate }
+          });
+        } else {
+          alert("Please select a template before proceeding.");
+        }
+      }
+    }
+  };
+  </script>
+  
+  <style scoped>
+  /* Add custom styling if needed */
+  .no-highlight {
+    text-transform: none;
+  }
+  </style>

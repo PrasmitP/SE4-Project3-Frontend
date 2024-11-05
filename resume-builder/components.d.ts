@@ -7,6 +7,12 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AppFooter: typeof import('./src/components/AppFooter.vue')['default']
+    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    LanguagesSection: typeof import('./src/components/LanguagesSection.vue')['default']
+    SkillsSection: typeof import('./src/components/SkillsSection.vue')['default']
+    TemplateSwitcher: typeof import('./src/components/TemplateSwitcher.vue')['default']
+
     IconRow: typeof import('./src/components/IconRow.vue')['default']
     PDFDownloader: typeof import('./src/components/PDFDownloader.vue')['default']
     Resume: typeof import('./src/components/Resume.vue')['default']
