@@ -8,7 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     IconRow: typeof import('./src/components/IconRow.vue')['default']
-    PDFDownloader: typeof import('./src/components/PDFDownloader.vue')['default']
+    PDFDownloader: typeof import('./src/services/PDFDownloader')['default']
     Resume: typeof import('./src/components/Resume.vue')['default']
     ResumePreview: typeof import('./src/components/ResumePreview.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

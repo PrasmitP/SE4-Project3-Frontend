@@ -9,7 +9,7 @@
     </v-container>
 </template>
 <script setup>
-import { generatePDF } from '../components/PDFDownloader.vue';
+import { generatePDF } from '../services/PDFDownloader';
 
 const props = defineProps({
     resumeData: {
