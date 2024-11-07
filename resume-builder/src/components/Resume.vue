@@ -3,16 +3,16 @@
         <IconRow :style="{
             visibility: showIconRow && !newResumeBool ? 'visible' : 'hidden',
         }"/>
-        <div class="resumePreview" v-if="props.resumeObject" @click="$emit('showPreviewEmit')">
-            <div>
+        <v-card class="resumePreview" v-if="props.resumeObject" @click="$emit('showPreviewEmit')">
+            <v-card-text>
                 <p class="textInside">{{ props.resumeObject.exampleText }}</p>
-            </div>
-        </div>
-        <div class="resumePreview" v-else @click="goToBuild">
-            <div class="circle">
-                <v-icon class="plusSign">mdi-plus</v-icon>
-            </div>
-        </div>
+            </v-card-text>
+        </v-card>
+        <v-card class="resumePreview" v-else @click="goToBuild">
+                <div class="circle">
+                    <v-icon class="plusSign">mdi-plus</v-icon>
+                </div>
+        </v-card>
         <p>{{ resumeName }}</p>
     </div>
 </template>
@@ -53,12 +53,12 @@ p {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin:  3px;
+    margin:  10px;
     width: fit-content;
 }
 .resumePreview {
-    width: 90px;
-    height: 160px;
+    width: 135px;
+    height: 240px;
     background-color: lightgrey;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -83,8 +83,8 @@ p {
 }
 
 .circle {
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     background-color: white;
     display: flex;
