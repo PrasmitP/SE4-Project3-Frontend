@@ -1,8 +1,8 @@
 <template>
-    <v-container>
+    <v-container >
         <ResumePreview v-if="showPreview" @hidePreviewEmit="showPreview = false" />
-        <h1>Your Resumes</h1>
-        <v-row>
+        <div class="text-h4" style="text-align: center;">Saved Resumes</div>
+        <v-row justify="center">
             <Resume />
             <Resume v-for="resumeObject in resumeObjects" :resumeObject="resumeObject"
                 @showPreviewEmit="showPreview = true" />
