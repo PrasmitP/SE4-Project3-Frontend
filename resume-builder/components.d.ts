@@ -11,6 +11,7 @@ declare module 'vue' {
     AddExperience: typeof import('./src/components/builder_components/AddExperience.vue')['default']
     AddSkill: typeof import('./src/components/builder_components/AddSkill.vue')['default']
     IconRow: typeof import('./src/components/IconRow.vue')['default']
+    PDFDownloader: typeof import('./src/components/PDFDownloader.vue')['default']
     Resume: typeof import('./src/components/Resume.vue')['default']
     ResumePreview: typeof import('./src/components/ResumePreview.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

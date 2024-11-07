@@ -9,15 +9,22 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { defineProps } from 'vue';
+import { generatePDF } from './PDFDownloader.vue';
 
 const props = defineProps({
     size: {
         type: String,
-        optional: true,
+        optional: true
+    },
+    resumeObject: {
+        type: Object,
+        default: () => ({})
+    },
+    resumeName: {
+        type: String,
+        default: 'New Resume'
     }
 });
-
-
 
 const router = useRouter(); 
 const goToBuild = () => {
@@ -29,7 +36,7 @@ const deleteResume = () => {
 }
 
 const downloadPDF = () => {
-    console.log("download pdf");
+    generatePDF(props.resumeObject, props.resumeName);
 }
 </script>
 
