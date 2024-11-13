@@ -10,16 +10,21 @@
                             {{ template.name }}
                         </v-card-title>
                         <div style="display: flex; flex-direction: column; align-items: center;">
-                            <v-radio></v-radio>
+                            <v-radio-group v-model="selectedTemplate">
+                                <v-radio :value="template.id"></v-radio>
+                            </v-radio-group>
                         </div>
                     </v-card>
-
                 </v-col>
             </v-row>
         </v-card>
+
     </v-container>
 </template>
+
 <script setup>
+import { ref } from 'vue';
+
 const templates = [
     {
         id: 1,
@@ -43,7 +48,10 @@ const templates = [
         // preview: 'template4.png'
     }
 ]
+
+const selectedTemplate = ref(null);
 </script>
+
 <style scoped>
 .resumePreview {
     width: 135px;
