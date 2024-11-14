@@ -4,12 +4,12 @@
         <div class="resumePreview"></div>
         <h2>Ai Suggestions</h2>
         <p>ai suggestion text should go here</p>
-        <v-btn>Edit</v-btn>
+        <v-btn @click="$router.push('/build')">Edit</v-btn>
         <v-btn @click="downloadPDF">Download PDF</v-btn>
     </v-container>
 </template>
 <script setup>
-import { generatePDF } from '../components/PDFDownloader.vue';
+import { generatePDF } from '../services/PDFDownloader';
 
 const props = defineProps({
     resumeData: {

@@ -9,7 +9,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { defineProps } from 'vue';
-import { generatePDF } from './PDFDownloader.vue';
+import { generatePDF } from '../services/PDFDownloader';
 
 const props = defineProps({
     size: {

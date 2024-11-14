@@ -12,6 +12,12 @@ export default class Utils {
       if (!name) return;
       return JSON.parse(window.localStorage.getItem(name));
     };
+
+    // get isLogged
+    static isLogged = () => {
+      return window.localStorage.getItem("user") !== null;
+    };
+
     // remove item
     static removeItem = (name) => {
       if (!name) return;

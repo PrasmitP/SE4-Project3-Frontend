@@ -3,13 +3,14 @@
     <v-main>
       <v-app-bar color="primary">
         <v-toolbar-title>
-          <span >Resume</span>
+          <span>Resume</span>
           <span class="font-weight-light">Builder</span>
         </v-toolbar-title>
         <v-btn variant="plain" to="/">Home</v-btn>
         <v-btn variant="plain" to="/myInfo">My Information</v-btn>
-        <v-spacer></v-spacer>  
-        <v-btn variant="plain" to="/login">Login</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn v-if="!isLogged" variant="plain" to="/login">Login</v-btn>
+        <v-btn v-else variant="plain" @click="logoutUser">Logout</v-btn>
       </v-app-bar>
       <router-view />
     </v-main>
@@ -17,5 +18,13 @@
 </template>
 
 <script setup>
-//
+import { ref } from 'vue'
+import Utils from './config/utils'
+
+let isLogged = ref(Utils.isLogged())
+
+let logoutUser = () => {
+  Utils.removeItem("user")
+}
+
 </script>
