@@ -8,13 +8,13 @@
                         <v-card-title>
                             <h2>Basic Information</h2>
                         </v-card-title>
-                        <v-text-field label="First Name *" type="text" required></v-text-field>
-                        <v-text-field label="Last Name *" type="text" required></v-text-field>
-                        <v-text-field label="City *" type="text" required></v-text-field>
-                        <v-select label="State *" :items="states" required></v-select>
-                        <v-text-field label="Phone Number *" type="phone-number" required></v-text-field>
-                        <v-text-field label="Email *" type="email" required></v-text-field>
-                        <v-text-field label="LinkedIn/Website" type="text"></v-text-field>
+                        <v-text-field v-model="userBody.fName" label="First Name *" type="text" required></v-text-field>
+                        <v-text-field v-model="userBody.lName" label="Last Name *" type="text" required></v-text-field>
+                        <v-text-field v-model="userBody.city" label="City *" type="text" required></v-text-field>
+                        <v-select v-model="userBody.state" label="State *" :items="states" required></v-select>
+                        <v-text-field v-model="userBody.phoneNumber" label="Phone Number *" type="phone-number" required></v-text-field>
+                        <v-text-field v-model="userBody.contactEmail" label="Contact Email *" type="email" required></v-text-field>
+                        <v-text-field v-model="userBody.linkedInUrl" label="LinkedIn/Website" type="text"></v-text-field>
                         <v-card-title>
                             <h2>Professional Summary</h2>
                         </v-card-title>
@@ -52,7 +52,7 @@
                         <v-select label="Proficiency Level" :items="proficiencyLevels"></v-select>
                         <v-btn>+</v-btn>
                         <v-spacer></v-spacer>
-                        <v-btn>Save</v-btn>
+                        <v-btn @click="saveUser">Save</v-btn>
                     </v-card>
                 </v-form>
             </v-col>
@@ -62,8 +62,26 @@
 
 <script setup>
 import { ref } from 'vue';
+import Utils from '@/config/utils.js';
+import userServices from '@/services/userServices.js';
 
-let userName = ref("John Smith");
+let userBody = ref({
+    fName: "",
+    lName: "",
+    city: "",
+    state: "",
+    phoneNumber: "",
+    email: "",
+    contactEmail: "",
+    linkedInUrl: "",
+})
+
+const userStore = ref(null);
+let userName = ref("");
+userStore.value = Utils.getStore("user");
+let userId = userStore.value.userId
+userName.value = userStore.value.fName + " " + userStore.value.lName;
+
 const states = [
     "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida",
     "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine",
@@ -80,6 +98,28 @@ const statesShort = [
 const proficiencyLevels = [
     "Beginner", "Intermediate", "Advanced", "Fluent", "Native"
 ];
+
+let loadUser = () => {
+    userServices.getUserForId(userId)
+        .then(response => {
+            userBody.value = response.data;
+        })
+        .catch(e => {
+            console.log(e);
+        });
+}
+loadUser();
+
+let saveUser = () => {
+    userBody.updatedAt = new Date();
+    userServices.update(userId, userBody.value)
+        .then(response => {
+            console.log(response.data);
+        })
+        .catch(e => {
+            console.log(e);
+        });
+}
 </script>
 
 <style scoped></style>
