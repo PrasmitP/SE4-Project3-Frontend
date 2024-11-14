@@ -12,7 +12,7 @@ export function generateTemplate4(doc, resumeData) {
     doc.setFontSize(10);
     doc.setFont("arial", "normal");
     doc.text(
-        `${resumeData.city || "City"}, ${resumeData.state || "State"} ♦ ${resumeData.phoneNumber || "Phone Number"} ♦ ${resumeData.email || "Email Address"} ♦ ${resumeData.website || "LinkedIn or Website URL"}`,
+        `${resumeData.city || "City"}, ${resumeData.state || "State"} | ${resumeData.phoneNumber || "Phone Number"} | ${resumeData.email || "Email Address"} | ${resumeData.website || "LinkedIn or Website URL"}`,
         doc.internal.pageSize.getWidth() / 2, 28, { align: "center" }
     );
 
