@@ -2,7 +2,8 @@
     <v-btn @click="() => showEducationAdd = true" color="button">Add Education</v-btn>
     <v-dialog v-model="showEducationAdd">
         <template v-slot:default="showEducationAdd">
-            <v-card color="primary" max-width="80vw">
+            <v-container class="justify-center">
+            <v-card color="primary" max-width="95vw">
                 <v-card-title>Add Education</v-card-title>
                 <v-row>
                     <v-col cols="4">
@@ -32,7 +33,9 @@
                 <!-- think about how to implement these -->
                 <v-text-field label="Awards" type="text"></v-text-field>
                 <v-text-field label="Coursework" type="text"></v-text-field>
+                <v-btn>+</v-btn>
             </v-card>
+        </v-container>
         </template>
     </v-dialog>
 </template>
