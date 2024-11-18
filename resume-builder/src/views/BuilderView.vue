@@ -58,6 +58,7 @@
                     <v-textarea label="Professional Summary *" required></v-textarea>
                 </v-card>
 
+                <!-- Education component -->
                 <v-card color="primary">
                     <v-card-title>
                         <h2>Education</h2>
@@ -66,11 +67,13 @@
                         <v-row>
                             <v-col v-for="education in currentEducation" cols="6">
                                 <v-card>
+                                    <v-btn @click="editResume">Edit</v-btn>
+                                    <v-btn @click="deleteResume(education.educationId)">Delete</v-btn>
                                     <v-card-title>
-                                        <h3>{{ education.universityName }}</h3>
+                                        <h3>{{ education.institutionName }}</h3>
                                     </v-card-title>
                                     <v-card-text>
-                                        <p>{{ education.degree }}</p>
+                                        <p>{{ education.degree || education.bachalorName }}</p>
                                         <p>{{ education.city }}, {{ education.state }}</p>
                                         <p>{{ education.startDate }} - {{ education.endDate }}</p>
                                         <p>GPA: {{ education.gpa }}</p>
@@ -78,10 +81,11 @@
                                 </v-card>
                             </v-col>
                         </v-row>
-                        <add-education />
+                        <add-education :userId="userId" :educationList="currentEducation"/>
                     </v-card>
                 </v-card>
 
+                <!-- Experience component -->
                 <v-card color="secondary">
                     <v-card-title>
                         <h2>Professional Experience</h2>
@@ -89,6 +93,8 @@
                     <v-card color="transparent">
                         <v-row>
                             <v-col v-for="experience in currentExperience" cols="6">
+                                <v-btn @click="editResume">Edit</v-btn>
+                                <v-btn @click="deleteResume(experience.experienceId)">Delete</v-btn>
                                 <v-card>
                                     <v-card-title>
                                         <h3>{{ experience.companyName }}</h3>
@@ -135,10 +141,16 @@
 import { ref } from 'vue';
 import Utils from '@/config/utils';
 import resumeServices from '@/services/resumeServices';
+import educationServices from '@/services/educationServices';
+
+
+// creating important variables for the page
 
 let resumeName = ref("");
-let user = {}
-user = Utils.getStore("user");
+let user = Utils.getStore("user");
+let userId = user.userId;
+
+// start of constant for data editing
 
 const states = [
     "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida",
@@ -153,43 +165,14 @@ const statesShort = [
     "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK",
     "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
 ];
+const proficiencyLevels = [
+    "Beginner", "Intermediate", "Advanced", "Fluent", "Native"
+];
+
+// start of lists of data for resume
 
 let currentEducation = ref([
-    {
-        universityName: "Oklahoma Christian University",
-        city: "Edmond",
-        state: "OK",
-        startDate: "8/2021",
-        endDate: "4/2025",
-        degree: "Bachelor of Science in Computer Science",
-        gpa: 3.5,
-        awards: "",
-        coursework: ""
-    },
-    {
-        universityName: "Harrisburg University of Science and Technology",
-        city: "Harrisburg",
-        state: "PA",
-        startDate: "8/2016",
-        endDate: "4/2021",
-        degree: "DegreeHere",
-        gpa: 2.0,
-        awards: "",
-        coursework: ""
-    },
-    {
-        universityName: "University of Oklahoma",
-        city: "Norman",
-        state: "OK",
-        startDate: "8/2015",
-        endDate: "4/2019",
-        degree: "DegreeHere",
-        gpa: 3.0,
-        awards: "",
-        coursework: ""
-    }
 ])
-
 let currentExperience = ref([
     {
         companyName: "Company Name",
@@ -259,9 +242,7 @@ let currentSkills = ref([
     }
 ])
 
-const proficiencyLevels = [
-    "Beginner", "Intermediate", "Advanced", "Fluent", "Native"
-];
+// functions that send requests to backend
 
 let saveResume = () => {
     let resumeData = {
@@ -278,6 +259,26 @@ let saveResume = () => {
         .catch((error) => {
             console.log(error);
         })
+}
+let deleteResume = (educationId) => {
+    educationServices.delete(educationId)
+        .then((response) => {
+            console.log(response);
+            currentEducation.value = currentEducation.value.filter(education => education.educationId !== educationId)
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+}
+// getting user's education data from the backend
+if (user) {
+    educationServices.getAllForUser(userId).then((res) => {
+        res.data.forEach((item) => {
+            let education = item;
+            console.log(item)
+            currentEducation.value.push(education);
+        });
+    });
 }
 
 </script>

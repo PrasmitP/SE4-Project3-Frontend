@@ -6,7 +6,7 @@
           <v-card-title>Add Education</v-card-title>
           <v-row>
             <v-col cols="4">
-              <v-text-field label="University Name *" type="text" required v-model="education.university"></v-text-field>
+              <v-text-field label="University Name *" type="text" required v-model="education.institutionName"></v-text-field>
             </v-col>
             <v-col cols="3">
               <v-text-field label="City *" type="text" required v-model="education.city"></v-text-field>
@@ -44,18 +44,33 @@
   
   <script setup>
   import { ref } from 'vue';
-  
+  import educationServices from '@/services/educationServices';
+
+
+
   let showEducationAdd = ref(false);
+  const props = defineProps({
+    userId: {
+      type: String,
+      required: true
+    },
+    educationList: {
+      type: Array,
+      required: true
+    }
+  });
+  let educationList = props.educationList;
+  let userId = props.userId;
+  console.log(userId);
   let education = ref({
-    university: '',
+    institutionName: '',
     city: '',
     state: '',
     startDate: '',
     endDate: '',
-    degree: '',
+    bachalorName: '',
     gpa: '',
-    awards: '',
-    coursework: ''
+    userId: userId,
   });
   
   let statesShort = [
@@ -65,8 +80,14 @@
 ];
   
   const saveEducation = () => {
-    console.log('Education data saved:', education.value);
-    showEducationAdd.value = false; 
+    console.log(education.value);
+    educationServices.create(education.value).then((res) => {
+      console.log(res);
+      showEducationAdd.value = false;
+      educationList.push(education.value);
+    }).catch((err) => {
+      console.log(err);
+    });
   };
   </script>
   
