@@ -2,7 +2,8 @@
     <v-btn @click="() => showExperienceAdd = true" color="button">Add Experience</v-btn>
     <v-dialog v-model="showExperienceAdd">
         <template v-slot:default="showExperienceAdd">
-            <v-card color="primary" max-width="80vw">
+            <v-container class="justify-center">
+                <v-card color="primary" max-width="95vw">
                 <v-card-title>Add Experience</v-card-title>
                 <v-text-field label="Company Name *" type="text" required></v-text-field>
                 <v-row>
@@ -26,6 +27,7 @@
                     placeholder="Accomplished {X} as measured by {Y}, by doing {Z} | Action + Project/Problem + Results = Accomplishment"></v-textarea>
                 <v-btn>+</v-btn>
             </v-card>
+            </v-container>
         </template>
     </v-dialog>
 </template>
