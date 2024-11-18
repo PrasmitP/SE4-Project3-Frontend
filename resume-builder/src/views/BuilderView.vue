@@ -77,7 +77,7 @@
 
                     <v-card color="transparent" class="mb-3">
                         <v-row>
-                            <v-col v-for="education in currentEducation" :key="education.universityName" cols="6">
+                            <v-col v-for="education in currentEducations" cols="6">
                                 <v-card class="mb-2">
                                     <v-btn @click="editEducation">Edit</v-btn>
                                     <v-btn @click="deleteEducation(education.educationId)">Delete</v-btn>
@@ -239,11 +239,12 @@ let currentEducations = ref([])
 let currentExperiences = ref([])
 let currentSkills = ref([])
 
-// functions that send requests to backend
-
 function handleTemplateSelection(id) {
     selectedTemplate.value = id;
 }
+
+// functions that send requests to backend
+
 let deleteEducation = (educationId) => {
     educationServices.delete(educationId)
         .then((response) => {
