@@ -46,8 +46,6 @@
   import { ref } from 'vue';
   import educationServices from '@/services/educationServices';
 
-
-
   let showEducationAdd = ref(false);
   const props = defineProps({
     userId: {
@@ -61,7 +59,7 @@
   });
   let educationList = props.educationList;
   let userId = props.userId;
-  console.log(userId);
+
   let education = ref({
     institutionName: '',
     city: '',
