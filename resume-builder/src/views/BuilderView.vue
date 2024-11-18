@@ -68,7 +68,7 @@
                             <v-col v-for="education in currentEducation" cols="6">
                                 <v-card>
                                     <v-btn @click="editResume">Edit</v-btn>
-                                    <v-btn @click="deleteResume(education.educationId)">Delete</v-btn>
+                                    <v-btn @click="deleteEducation(education.educationId)">Delete</v-btn>
                                     <v-card-title>
                                         <h3>{{ education.institutionName }}</h3>
                                     </v-card-title>
@@ -94,13 +94,13 @@
                         <v-row>
                             <v-col v-for="experience in currentExperience" cols="6">
                                 <v-btn @click="editResume">Edit</v-btn>
-                                <v-btn @click="deleteResume(experience.experienceId)">Delete</v-btn>
+                                <v-btn @click="deleteExperience(experience.experienceId)">Delete</v-btn>
                                 <v-card>
                                     <v-card-title>
                                         <h3>{{ experience.companyName }}</h3>
                                     </v-card-title>
                                     <v-card-text>
-                                        <p>{{ experience.jobTitle }}</p>
+                                        <p>{{ experience.jobRole }}</p>
                                         <p>{{ experience.city }}, {{ experience.state }}</p>
                                         <p>{{ experience.startDate }} - {{ experience.endDate }}</p>
                                         <p v-for="accomplishment in experience.accomplishments">{{ accomplishment }}
@@ -142,7 +142,7 @@ import { ref } from 'vue';
 import Utils from '@/config/utils';
 import resumeServices from '@/services/resumeServices';
 import educationServices from '@/services/educationServices';
-
+import experienceServices from '@/services/experienceServices';
 
 // creating important variables for the page
 
@@ -171,43 +171,8 @@ const proficiencyLevels = [
 
 // start of lists of data for resume
 
-let currentEducation = ref([
-])
-let currentExperience = ref([
-    {
-        companyName: "Company Name",
-        jobTitle: "Job Title",
-        startDate: "8/2021",
-        endDate: "4/2025",
-        city: "City",
-        state: "State",
-        accomplishments: [
-            "Accomplished {X} as measured by {Y}, by doing {Z} | Action + Project/Problem + Results = Accomplishment"
-        ]
-    },
-    {
-        companyName: "Company Name",
-        jobTitle: "Job Title",
-        startDate: "8/2021",
-        endDate: "4/2025",
-        city: "City",
-        state: "State",
-        accomplishments: [
-            "Accomplished {X} as measured by {Y}, by doing {Z} | Action + Project/Problem + Results = Accomplishment"
-        ]
-    },
-    {
-        companyName: "Company Name",
-        jobTitle: "Job Title",
-        startDate: "8/2021",
-        endDate: "4/2025",
-        city: "City",
-        state: "State",
-        accomplishments: [
-            "Accomplished {X} as measured by {Y}, by doing {Z} | Action + Project/Problem + Results = Accomplishment"
-        ]
-    }
-])
+let currentEducation = ref([])
+let currentExperience = ref([])
 let currentSkills = ref([
     {
         type: "Skill",
@@ -260,7 +225,7 @@ let saveResume = () => {
             console.log(error);
         })
 }
-let deleteResume = (educationId) => {
+let deleteEducation = (educationId) => {
     educationServices.delete(educationId)
         .then((response) => {
             console.log(response);
@@ -270,13 +235,30 @@ let deleteResume = (educationId) => {
             console.log(error);
         })
 }
-// getting user's education data from the backend
+let deleteExperience = (experienceId) => {
+    experienceServices.delete(experienceId)
+        .then((response) => {
+            console.log(response);
+            currentExperience.value = currentExperience.value.filter(experience => experience.experienceId !== experienceId)
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+}
+// getting user's data from the backend
 if (user) {
     educationServices.getAllForUser(userId).then((res) => {
         res.data.forEach((item) => {
             let education = item;
             console.log(item)
             currentEducation.value.push(education);
+        });
+    });
+    experienceServices.getAllForUser(userId).then((res) => {
+        res.data.forEach((item) => {
+            let experience = item;
+            console.log(item)
+            currentExperience.value.push(experience);
         });
     });
 }
