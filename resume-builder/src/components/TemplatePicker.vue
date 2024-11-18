@@ -35,7 +35,7 @@ const templates = [
     { id: 4, name: 'Template 4' },
 ];
 
-const selectedTemplate = ref(null);
+const selectedTemplate = ref(1);
 const emit = defineEmits(['template-selected']);
 
 function selectTemplate(id) {

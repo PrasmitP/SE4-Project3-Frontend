@@ -14,15 +14,22 @@ import { ref } from 'vue';
 import Utils from '@/config/utils';
 import resumeServices from '@/services/resumeServices';
 
-let resumeObjects = ref([{ resumeName: "placeholder", exampleText: "this resume is not from the database" }])
+
+
+let resumeObjects = ref([])
+
+
 let user = Utils.getStore("user");
+
+// getting data from the backend
 if (user) {
     let userId = user.userId;
     resumeServices.getAllForUser(userId).then((res) => {
         res.data.forEach((item) => {
-            let resume = { resumeName: item.title, exampleText: "this resume is from the database! although this text isnt" };
+            let resume = item
             resumeObjects.value.push(resume);
         });
+        console.log("resumes:")
         console.log(resumeObjects)
     });
 }
