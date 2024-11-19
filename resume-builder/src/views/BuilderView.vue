@@ -67,8 +67,9 @@
                     <v-textarea v-if="selectedTemplate === 3" label="Career Objective" optional class="mb-3"></v-textarea>
                 </v-card>
 
-                <!-- Education Section (with Accounting Hours for Template 1) -->
+                <!-- Education Section -->
                 <v-card color="primary" class="mb-4">
+
                     <v-card-title>
                         <h2>Education</h2>
                     </v-card-title>
@@ -77,11 +78,13 @@
                         <v-row>
                             <v-col v-for="education in currentEducation" :key="education.universityName" cols="6">
                                 <v-card class="mb-2">
+                                    <v-btn @click="editEducation">Edit</v-btn>
+                                    <v-btn @click="deleteEducation(education.educationId)">Delete</v-btn>
                                     <v-card-title>
-                                        <h3>{{ education.universityName }}</h3>
+                                        <h3>{{ education.institutionName }}</h3>
                                     </v-card-title>
                                     <v-card-text>
-                                        <p>{{ education.degree }}</p>
+                                        <p>{{ education.degree || education.bachalorName }}</p>
                                         <p>{{ education.city }}, {{ education.state }}</p>
                                         <p>{{ education.startDate }} - {{ education.endDate }}</p>
                                         <p>GPA: {{ education.gpa }}</p>
@@ -91,7 +94,7 @@
                                 </v-card>
                             </v-col>
                         </v-row>
-                        <add-education />
+                        <add-education :userId="userId" :educationList="currentEducations" />
                     </v-card>
                 </v-card>
 
@@ -103,13 +106,15 @@
 
                     <v-card color="transparent" class="mb-3">
                         <v-row>
-                            <v-col v-for="experience in currentExperience" :key="experience.companyName" cols="6">
+                            <v-col v-for="experience in currentExperiences" cols="6">
+                                <v-btn @click="editExperience">Edit</v-btn>
+                                <v-btn @click="deleteExperience(experience.experienceId)">Delete</v-btn>
                                 <v-card class="mb-2">
                                     <v-card-title>
                                         <h3>{{ experience.companyName }}</h3>
                                     </v-card-title>
                                     <v-card-text>
-                                        <p>{{ experience.jobTitle }}</p>
+                                        <p>{{ experience.jobRole }}</p>
                                         <p>{{ experience.city }}, {{ experience.state }}</p>
                                         <p>{{ experience.startDate }} - {{ experience.endDate }}</p>
                                         <p v-for="accomplishment in experience.accomplishments" :key="accomplishment">{{ accomplishment }}</p>
@@ -117,7 +122,7 @@
                                 </v-card>
                             </v-col>
                         </v-row>
-                        <add-experience />
+                        <add-experience :userId="userId" :experienceList="currentExperiences"/>
                     </v-card>
                 </v-card>
 
@@ -140,18 +145,20 @@
                         <h2>Skills</h2>
                     </v-card-title>
                     <v-row>
-                        <v-col v-for="skill in currentSkills" :key="skill.skill" cols="2">
+                        <v-col v-for="skill in currentSkills" cols="2">
                             <v-card class="mb-2">
+                                <v-btn @click="editSkill">Edit</v-btn>
+                                <v-btn @click="deleteSkill(skill.skillId)">Delete</v-btn>
                                 <v-card-text v-if="skill.type == 'Language'">
-                                    <h3>{{ skill.skill }} - {{ skill.proficiency }}</h3>
+                                    <h3>{{ skill.title }} - {{ skill.proficiency }}</h3>
                                 </v-card-text>
                                 <v-card-title v-else>
-                                    <h3>{{ skill.skill }}</h3>
+                                    <h3>{{ skill.title }}</h3>
                                 </v-card-title>
                             </v-card>
                         </v-col>
                     </v-row>
-                    <add-skill />
+                    <add-skill :userId="userId" :skillList="currentSkills"/>
                 </v-card>
 
                 <!-- Template 3: Honors & Awards Section -->
@@ -201,7 +208,21 @@
 
 <script setup>
 import { ref } from 'vue';
+
 import TemplatePicker from '../components/TemplatePicker.vue';
+import Utils from '@/config/utils';
+import resumeServices from '@/services/resumeServices';
+import educationServices from '@/services/educationServices';
+import experienceServices from '@/services/experienceServices';
+import skillServices from '@/services/skillServices';
+
+// creating important variables for the page
+
+let resumeName = ref("");
+let user = Utils.getStore("user");
+let userId = user.userId;
+
+// start of constant for data editing
 
 const states = [
     "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida",
@@ -212,26 +233,74 @@ const states = [
     "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
 ];
 
-let currentEducation = ref([
-    { universityName: "Oklahoma Christian University", city: "Edmond", state: "OK", startDate: "8/2021", endDate: "4/2025", degree: "Bachelor of Science in Computer Science", gpa: 3.5 },
-    { universityName: "Harrisburg University of Science and Technology", city: "Harrisburg", state: "PA", startDate: "8/2016", endDate: "4/2021", degree: "DegreeHere", gpa: 2.0 },
-    { universityName: "University of Oklahoma", city: "Norman", state: "OK", startDate: "8/2015", endDate: "4/2019", degree: "DegreeHere", gpa: 3.0 }
-]);
-
-let currentExperience = ref([
-    { companyName: "Company Name", jobTitle: "Job Title", startDate: "8/2021", endDate: "4/2025", city: "City", state: "State", accomplishments: ["Accomplishment 1"] },
-    { companyName: "Company Name", jobTitle: "Job Title", startDate: "8/2021", endDate: "4/2025", city: "City", state: "State", accomplishments: ["Accomplishment 2"] }
-]);
-
-let currentSkills = ref([
-    { type: "Skill", skill: "Python" }, { type: "Skill", skill: "Java" }, { type: "Skill", skill: "C++" }, { type: "Language", skill: "Spanish", proficiency: "Fluent" }
-]);
 
 const selectedTemplate = ref(null);
+// start of lists of data for resume
+
+let currentEducations = ref([])
+let currentExperiences = ref([])
+let currentSkills = ref([])
+
+// functions that send requests to backend
 
 function handleTemplateSelection(id) {
     selectedTemplate.value = id;
 }
+let deleteEducation = (educationId) => {
+    educationServices.delete(educationId)
+        .then((response) => {
+            console.log(response);
+            currentEducations.value = currentEducations.value.filter(education => education.educationId !== educationId)
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+}
+let deleteExperience = (experienceId) => {
+    experienceServices.delete(experienceId)
+        .then((response) => {
+            console.log(response);
+            currentExperiences.value = currentExperiences.value.filter(experience => experience.experienceId !== experienceId)
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+}
+let deleteSkill = (skillId) => {
+    skillServices.delete(skillId)
+        .then((response) => {
+            console.log(response);
+            currentSkills.value = currentSkills.value.filter(skill => skill.skillId !== skillId)
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+}
+
+// getting user's data from the backend
+
+educationServices.getAllForUser(userId).then((res) => {
+    res.data.forEach((item) => {
+        let education = item;
+        console.log(item)
+        currentEducations.value.push(education);
+    });
+});
+experienceServices.getAllForUser(userId).then((res) => {
+    res.data.forEach((item) => {
+        let experience = item;
+        console.log(item)
+        currentExperiences.value.push(experience);
+    });
+});
+skillServices.getAllForUser(userId).then((res) => {
+    res.data.forEach((item) => {
+        let skill = item;
+        console.log(item)
+        currentSkills.value.push(skill);
+    });
+});
+
 
 </script>
 
