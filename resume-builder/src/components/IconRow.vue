@@ -1,43 +1,24 @@
 <template>
     <div class="iconRow">
-        <v-icon @click="goToBuild">mdi-pencil</v-icon>
-        <v-icon @click="downloadPDF">mdi-download</v-icon>
-        <v-icon @click="deleteResume">mdi-delete</v-icon>
+        <v-icon @click="emitEdit">mdi-pencil</v-icon>
+        <v-icon @click="emitDownload">mdi-download</v-icon>
+        <v-icon @click="emitDelete">mdi-delete</v-icon>
     </div>
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
-import { defineProps } from 'vue';
-import { generatePDF } from './PDFDownloader.vue';
-
 const props = defineProps({
     size: {
         type: String,
         optional: true
-    },
-    resumeObject: {
-        type: Object,
-        default: () => ({})
-    },
-    resumeName: {
-        type: String,
-        default: 'New Resume'
     }
 });
 
-const router = useRouter(); 
-const goToBuild = () => {
-    router.push('/build');
-}
+const emit = defineEmits();
+const emitEdit = () => {emit('edit-clicked')}
+const emitDownload = () => {emit('download-clicked')}
+const emitDelete = () => {emit('delete-clicked')}
 
-const deleteResume = () => {
-    console.log("delete resume");
-}
-
-const downloadPDF = () => {
-    generatePDF(props.resumeObject, props.resumeName);
-}
 </script>
 
 <style scoped>

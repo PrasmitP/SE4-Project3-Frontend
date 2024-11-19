@@ -29,6 +29,12 @@ const router = createRouter({
       props: true,
     },
     {
+      path: "/edit/:id",
+      name: "edit",
+      component: BuilderView,
+      props: true,
+    },
+    {
       path: "/myInfo",
       name: "myInfo",
       component: MyInfoView,

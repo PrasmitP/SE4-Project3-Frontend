@@ -1,18 +1,18 @@
 <template>
-    <div class="wrapper" @mouseover="showIconRow=true" @mouseout="showIconRow=false">
-        <IconRow :resumeName="resumeName" :style="{
+    <div class="wrapper" @mouseover="showIconRow = true" @mouseout="showIconRow = false">
+        <IconRow @edit-clicked="goToEdit" @download-clicked="downloadPDF" @delete-clicked="deleteResume" :style="{
             visibility: showIconRow && !newResumeBool ? 'visible' : 'hidden',
-        }"/>
-        <v-card class="resumePreview" v-if="props.resumeObject" @click="$emit('showPreviewEmit')">
-            <v-card-text>
-                <p class="textInside">{{ props.resumeObject.exampleText }}</p>
-            </v-card-text>
+        }" />
+
+        <v-card class="resumePreview" v-if="newResumeBool" @click="goToBuild">
+            <div class="circle">
+                <v-icon class="plusSign">mdi-plus</v-icon>
+            </div>
         </v-card>
-        <v-card class="resumePreview" v-else @click="goToBuild">
-                <div class="circle">
-                    <v-icon class="plusSign">mdi-plus</v-icon>
-                </div>
+
+        <v-card class="resumePreview" v-else @click="$emit('showPreviewEmit')">
         </v-card>
+
         <p>{{ resumeName }}</p>
     </div>
 </template>
@@ -20,26 +20,28 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
+import { generatePDF } from '@/services/PDFDownloader';
 
 const props = defineProps({
     resumeObject: {
         type: Object
-    },
-    resumeName: {
-        type: String,
-        default: "New Resume"
     }
 });
 
+let resumeObject = props.resumeObject
+console.log(resumeObject)
+let newResumeBool = resumeObject ? false : true;
+let resumeName = newResumeBool ? "New Resume" : resumeObject.title;
+
+let resumeId = newResumeBool ? 0 : resumeObject.resumeId;
 let previewResume = ref(false);
-let newResumeBool = props.resumeObject ? false : true;
-let resumeName = newResumeBool ? "New Resume" : props.resumeObject.resumeName;
 let showIconRow = ref(false);
 
 const router = useRouter();
-const goToBuild = () => {
-    router.push('/build');
-}
+const goToBuild = () => {router.push('/build');}
+const goToEdit = () => {router.push('/edit/' + resumeId);}
+const downloadPDF = () => {generatePDF(resumeObject);}
+const deleteResume = () => {console.log("delete resume");}
 </script>
 
 <style scoped>
@@ -57,9 +59,10 @@ p {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin:  10px;
+    margin: 10px;
     width: fit-content;
 }
+
 .resumePreview {
     width: 135px;
     height: 240px;
