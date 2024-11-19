@@ -150,7 +150,7 @@
                 </v-card>
             </v-form>
         </v-col>
-        <v-btn to="build/saved" class="mt-4">Generate Resume</v-btn>
+        <v-btn @click="saveUser" class="mt-4">Save</v-btn>
     </v-container>
 </template>
 
@@ -202,7 +202,8 @@ const proficiencyLevels = [
 ];
 
 // getting user's data from the backend
-userServices.getUserForId(userId).then(response => {
+userServices.getUserForId(userId)
+    .then(response => {
         userBody.value = response.data;
     })
     .catch(e => {

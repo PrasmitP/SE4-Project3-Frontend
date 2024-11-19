@@ -3,11 +3,8 @@
         <v-card width="40vw" color="transparent">
             <v-row>
                 <v-col v-for="template in templates" :key="template.id" cols="3">
-                    <v-card
-                        class="resumePreview"
-                        @click="selectTemplate(template.id)"
-                        :class="{ selected: template.id === selectedTemplate }"
-                    >
+                    <v-card class="resumePreview" @click="selectTemplate(template.id)"
+                        :class="{ selected: template.id === selectedTemplate }">
                     </v-card>
                     <v-card variant="plain">
                         <v-card-title class="font-weight-light">
