@@ -67,7 +67,7 @@
                     <v-textarea v-if="selectedTemplate === 3" label="Career Objective" optional class="mb-3"></v-textarea>
                 </v-card>
 
-                <!-- Education Section -->
+                <!-- Education Section (with Accounting Hours for Template 1) -->
                 <v-card color="primary" class="mb-4">
                     <v-card-title>
                         <h2>Education</h2>
@@ -85,6 +85,8 @@
                                         <p>{{ education.city }}, {{ education.state }}</p>
                                         <p>{{ education.startDate }} - {{ education.endDate }}</p>
                                         <p>GPA: {{ education.gpa }}</p>
+                                        <!-- Template 1: Accounting Hours included in Education -->
+                                        <v-text-field v-if="selectedTemplate === 1" label="Accounting Hours" type="number"></v-text-field>
                                     </v-card-text>
                                 </v-card>
                             </v-col>
@@ -117,6 +119,17 @@
                         </v-row>
                         <add-experience />
                     </v-card>
+                </v-card>
+
+                <!-- Template 3: Projects Section (below Experience) -->
+                <v-card color="primary" v-if="selectedTemplate === 3" class="mb-4">
+                    <v-card-title>
+                        <h2>Projects</h2>
+                    </v-card-title>
+                    <v-row>
+                        <!-- Add Project Fields here -->
+                    </v-row>
+                    <add-project />
                 </v-card>
 
                 <!-- Conditional Sections for Template 1, 3, and 4 -->
@@ -180,16 +193,6 @@
                     <add-project />
                 </v-card>
 
-                <!-- Template 1: Accounting Hours Section -->
-                <v-card color="primary" v-if="selectedTemplate === 1" class="mb-4">
-                    <v-card-title>
-                        <h2>Accounting Hours</h2>
-                    </v-card-title>
-                    <v-row>
-                        <!-- Add Accounting Hours fields here -->
-                    </v-row>
-                    <add-accounting-hours />
-                </v-card>
             </v-form>
         </v-col>
         <v-btn to="build/saved" class="mt-4">Generate Resume</v-btn>
