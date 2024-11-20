@@ -216,12 +216,19 @@ import { useRouter } from 'vue-router';
 
 // creating important variables for the page
 
+let props = defineProps({
+    id: {
+        type: Number,
+    }
+})
+console.log("resume id:" + props.id)
+
 let selectedTemplate = ref(1);
 let user = Utils.getStore("user");
 let userId = user.userId;
 let resumeData = ref({
     title: "newResume",
-    template: 1,
+    template: "",
     summary: "",
     userId: user.userId,
 })
@@ -247,6 +254,8 @@ let currentSkills = ref([])
 let router = useRouter();
 
 let saveResume = () => {
+    resumeData.value.template = selectedTemplate.value;
+    console.log(selectedTemplate.value);
     resumeServices.create(resumeData.value)
         .then((response) => {
             console.log(response);
@@ -289,6 +298,13 @@ let deleteSkill = (skillId) => {
 }
 
 // getting user's data from the backend
+
+resumeServices.get(props.id).then((res) => {
+    let resume = res.data;
+    console.log(resume)
+    resumeData.value = resume;
+    selectedTemplate.value = resume.template;
+});
 
 educationServices.getAllForUser(userId).then((res) => {
     res.data.forEach((item) => {
