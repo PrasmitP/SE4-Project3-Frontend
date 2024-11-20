@@ -1,6 +1,7 @@
 <template>
   <!-- Button to Open Add/Edit Dialog -->
-  <v-btn @click="openDialog" color="button">{{ mode === 'add' ? 'Add Education' : 'Edit' }}</v-btn>
+  <v-btn @click="openDialog" color="button">{{ mode === 'add' ? 'Add Education' : 'Edit Education' }}</v-btn>
+
 
   <!-- Dialog for Add/Edit -->
   <v-dialog v-model="showEducationDialog">
@@ -89,6 +90,10 @@
 import { ref } from "vue";
 import educationServices from "@/services/educationServices";
 
+
+const emit = defineEmits(["refresh-data"]);
+
+
 // Props
 const props = defineProps({
   userId: {
@@ -163,6 +168,8 @@ const saveEducation = () => {
         console.log("Education added:", res);
         props.educationList.push(education.value); // Update the list
         showEducationDialog.value = false; // Close dialog
+        emit("refresh-data");
+
       })
       .catch((err) => {
         console.error("Error adding education:", err);
@@ -180,6 +187,8 @@ const saveEducation = () => {
           props.educationList[index] = education.value; // Update the list
         }
         showEducationDialog.value = false; // Close dialog
+        emit("refresh-data");
+
       })
       .catch((err) => {
         console.error("Error updating education:", err);

@@ -76,16 +76,11 @@
                     <v-card color="transparent" class="mb-3">
                         <v-row>
                             <v-col v-for="education in currentEducations" cols="6">
-                                <v-card class="mb-2">
-                                    <v-btn @click="educationDialog(education)">Edit</v-btn>
-                                    <add-education
-                                        ref="editEducationRef"
-                                        :userId="userId"
-                                        :educationList="currentEducations"
-                                        mode="edit"
-                                        :educationToEdit="selectedEducation"
-                                    />
-                                    <v-btn @click="deleteEducation(education.educationId)">Delete</v-btn>
+
+                                <v-card
+                                    class="mb-2"
+                                    :class="{ 'selected-card': selectedEducationId === education.educationId }"
+                                    @click="educationDialog(education)">   
                                     <v-card-title>
                                         <h3>{{ education.institutionName }}</h3>
                                     </v-card-title>
@@ -98,7 +93,30 @@
                                 </v-card>
                             </v-col>
                         </v-row>
-                        <add-education :userId="userId" :educationList="currentEducations" mode="add" />
+
+                        <add-education 
+                            :userId="userId" 
+                            :educationList="currentEducations" 
+                            mode="add" 
+                            @refresh-data="refreshEducationData"
+                        />
+                        <add-education
+                            v-if="selectedEducationId"
+                            ref="editEducationRef"
+                            :userId="userId"
+                            :educationList="currentEducations"
+                            mode="edit"
+                            :educationToEdit="selectedEducation"
+                            @refresh-data="refreshEducationData"
+                        />
+                        <v-btn
+                            v-if="selectedEducationId"
+                            class="mt-0"
+                            color="red"
+                            @click="deleteSelectedEducation"
+                        >
+                            Delete Education
+                        </v-btn>
                     </v-card>
                 </v-card>
 
@@ -287,25 +305,51 @@ let saveResume = () => {
         })
 }
 
+
+let selectedEducationId = ref(null);
 let selectedEducation = ref(null);
 const editEducationRef = ref(null);
 
 let educationDialog = (education) => {
-  selectedEducation.value = education;
-  editEducationRef.value.openDialog();
-}
 
+  if (selectedEducationId.value === education.educationId) {
+    selectedEducationId.value = null;
+    selectedEducation.value = null;
+  } else {
+    selectedEducationId.value = education.educationId;
+    selectedEducation.value = education;
+    editEducationRef.value.openDialog();
+  }
+};
 
-let deleteEducation = (educationId) => {
-    educationServices.delete(educationId)
-        .then((response) => {
-            console.log(response);
-            currentEducations.value = currentEducations.value.filter(education => education.educationId !== educationId)
-        })
-        .catch((error) => {
-            console.log(error);
-        })
-}
+let deleteSelectedEducation = () => {
+  if (selectedEducationId.value) {
+    educationServices.delete(selectedEducationId.value)
+      .then((response) => {
+        console.log("Education deleted:", response);
+        refreshEducationData();
+        selectedEducationId.value = null;
+        selectedEducation.value = null;
+      })
+      .catch((error) => {
+        console.error("Error deleting education:", error);
+      });
+  } else {
+    console.warn("No education selected for deletion.");
+  }
+};
+
+let refreshEducationData = () => {
+  educationServices.getAllForUser(userId)
+    .then((res) => {
+      currentEducations.value = res.data;
+      console.log("Education data refreshed:", currentEducations.value);
+    })
+    .catch((err) => {
+      console.error("Error refreshing education data:", err);
+    });
+};
+
 let deleteExperience = (experienceId) => {
     experienceServices.delete(experienceId)
         .then((response) => {
@@ -412,5 +456,12 @@ v-col {
 
 .v-btn {
     margin-top: 20px;
+}
+
+.selected-card {
+    background-color: #03203f;
+    color: white;
+    border: 2px solid #1565c0;
+    cursor: pointer;
 }
 </style>
