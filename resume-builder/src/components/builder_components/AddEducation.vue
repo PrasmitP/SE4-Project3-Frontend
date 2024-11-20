@@ -2,6 +2,7 @@
   <!-- Button to Open Add/Edit Dialog -->
   <v-btn @click="openDialog" color="button">{{ mode === 'add' ? 'Add Education' : 'Edit Education' }}</v-btn>
 
+
   <!-- Dialog for Add/Edit -->
   <v-dialog v-model="showEducationDialog">
     <v-card color="primary" max-width="80vw">
@@ -89,7 +90,9 @@
 import { ref } from "vue";
 import educationServices from "@/services/educationServices";
 
+
 const emit = defineEmits(["refresh-data"]);
+
 
 // Props
 const props = defineProps({
@@ -166,6 +169,7 @@ const saveEducation = () => {
         props.educationList.push(education.value); // Update the list
         showEducationDialog.value = false; // Close dialog
         emit("refresh-data");
+
       })
       .catch((err) => {
         console.error("Error adding education:", err);
@@ -184,6 +188,7 @@ const saveEducation = () => {
         }
         showEducationDialog.value = false; // Close dialog
         emit("refresh-data");
+
       })
       .catch((err) => {
         console.error("Error updating education:", err);

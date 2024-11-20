@@ -76,11 +76,11 @@
                     <v-card color="transparent" class="mb-3">
                         <v-row>
                             <v-col v-for="education in currentEducations" cols="6">
+
                                 <v-card
                                     class="mb-2"
                                     :class="{ 'selected-card': selectedEducationId === education.educationId }"
-                                    @click="educationDialog(education)"
-                                >   
+                                    @click="educationDialog(education)">   
                                     <v-card-title>
                                         <h3>{{ education.institutionName }}</h3>
                                     </v-card-title>
@@ -93,6 +93,7 @@
                                 </v-card>
                             </v-col>
                         </v-row>
+
                         <add-education 
                             :userId="userId" 
                             :educationList="currentEducations" 
@@ -290,11 +291,13 @@ let saveResume = () => {
         })
 }
 
+
 let selectedEducationId = ref(null);
 let selectedEducation = ref(null);
 const editEducationRef = ref(null);
 
 let educationDialog = (education) => {
+
   if (selectedEducationId.value === education.educationId) {
     selectedEducationId.value = null;
     selectedEducation.value = null;
