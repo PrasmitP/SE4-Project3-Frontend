@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AddEducation: typeof import('./src/components/builder_components/AddEducation.vue')['default']
     AddExperience: typeof import('./src/components/builder_components/AddExperience.vue')['default']
+    AddProject: typeof import('./src/components/builder_components/AddProject.vue')['default']
     AddSkill: typeof import('./src/components/builder_components/AddSkill.vue')['default']
     IconRow: typeof import('./src/components/IconRow.vue')['default']
     Resume: typeof import('./src/components/Resume.vue')['default']
