@@ -169,7 +169,7 @@
                 <!-- Template 4: Skills Section (Computer Skills only) -->
                 <v-card color="primary" v-if="selectedTemplate === 4" class="mb-4">
                     <v-card-title>
-                        <h2>Skills</h2>
+                        <h2>Computer Skills</h2>
                     </v-card-title>
                     <v-row>
                         <v-col v-for="skill in currentSkills" :key="skill.skill" cols="2">
@@ -189,10 +189,22 @@
                         <h2>Projects</h2>
                     </v-card-title>
                     <v-row>
-                        <!-- Add Project fields here -->
-                    </v-row>
-                    <add-project />
-                </v-card>
+                        <v-col v-for="project in currentProjects" cols="2">
+                            <v-btn @click="editProject">Edit</v-btn>
+                                <v-btn @click="deleteProject(project.projectId)">Delete</v-btn>
+                                <v-card class="mb-2">
+                                    <v-card-title>
+                                        <h3>{{ project.projectName }}</h3>
+                                    </v-card-title>
+                                    <v-card-text>
+                                        <p>{{ project.startDate }}</p>
+                                        <p>{{ project.endDate }}</p>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                        <add-project :userId="userId" :projectList="currentProject" />
+                    </v-card>
 
                 <!-- Template 1: Accounting Hours Section -->
                 <v-card color="primary" v-if="selectedTemplate === 1" class="mb-4">
@@ -219,6 +231,7 @@ import resumeServices from '@/services/resumeServices';
 import educationServices from '@/services/educationServices';
 import experienceServices from '@/services/experienceServices';
 import skillServices from '@/services/skillServices';
+import projectServices from '@/services/projectServices';
 import { useRouter } from 'vue-router';
 
 // creating important variables for the page
@@ -256,6 +269,7 @@ const states = [
 let currentEducations = ref([])
 let currentExperiences = ref([])
 let currentSkills = ref([])
+let currentProjects = ref([])
 
 // functions that send requests to backend
 let router = useRouter();
@@ -312,6 +326,17 @@ let deleteSkill = (skillId) => {
             console.log(error);
         })
 }
+let deleteProject = (projectId) => {
+    projectServices.delete(projectId)
+        .then((response) => {
+            console.log(response);
+            currentProjects.value = currentProjects.value.filter(project => project.projectId !== projectId)
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+}
+
 
 // getting user's data from the backend
 
@@ -343,6 +368,14 @@ skillServices.getAllForUser(userId).then((res) => {
         currentSkills.value.push(skill);
     });
 });
+projectServices.getAllForUser(userId).then((res) => {
+    res.data.forEach((item) => {
+        let project = item;
+        console.log(item)
+        currentProjects.value.push(project);
+    });
+});
+
 
 
 </script>
