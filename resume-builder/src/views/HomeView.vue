@@ -1,5 +1,5 @@
 <template>
-    <v-container >
+    <v-container>
         <ResumePreview v-if="showPreview" @hidePreviewEmit="showPreview = false" />
         <div class="text-h4" style="text-align: center;">Saved Resumes</div>
         <v-row justify="center">
@@ -11,12 +11,31 @@
 </template>
 <script setup>
 import { ref } from 'vue';
+import Utils from '@/config/utils';
+import resumeServices from '@/services/resumeServices';
+
+
+
+let resumeObjects = ref([])
+
+
+let user = Utils.getStore("user");
+
+// getting data from the backend
+if (user) {
+    let userId = user.userId;
+    resumeServices.getAllForUser(userId).then((res) => {
+        res.data.forEach((item) => {
+            let resume = item
+            resumeObjects.value.push(resume);
+        });
+        console.log("resumes:")
+        console.log(resumeObjects)
+    });
+}
+
 
 let showPreview = ref(false);
 
-const resumeObjects = [
-    { resumeName: "MyResume1", exampleText: "Example Text. This should have a preview of the resume" },
-    { resumeName: "MyResume2", exampleText: "Resume can be stored either as image or html content" },
-    { resumeName: "MyResume3", exampleText: "all resumes should have 4 options: edit, delete, download (pdf) and expanded preview" }];
 </script>
 <style scoped></style>
