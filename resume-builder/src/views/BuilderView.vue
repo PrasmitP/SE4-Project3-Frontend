@@ -3,16 +3,15 @@
         <v-col>
             <v-row justify="center">
                 <v-card style="font-size: 30px; margin-bottom: 10px;">
-                    <span class="font-weight-light" v-if="resumeName">{{ resumeName }}</span>
-                    <span class="font-weight-light" v-else>NewResume</span>
+                    <span class="font-weight-light">{{ resumeData.title }}</span>
                 </v-card>
             </v-row>
-            <v-text-field label="File Name" type="text" placeholder="NewResume" v-model="resumeName" class="mb-3"></v-text-field>
+            <v-text-field label="File Name" type="text" v-model="resumeData.title" class="mb-3"></v-text-field>
 
             <!-- Template Picker -->
             <v-row justify="center" class="mb-4">
                 <v-card color="transparent">
-                    <template-picker @template-selected="handleTemplateSelection" />
+                    <template-picker @template-selected="(id) => selectedTemplate = id" />
                 </v-card>
             </v-row>
 
@@ -63,8 +62,7 @@
                     <v-card-title>
                         <h3>Professional Summary</h3>
                     </v-card-title>
-                    <v-textarea v-if="selectedTemplate !== 3" label="Professional Summary *" required class="mb-3"></v-textarea>
-                    <v-textarea v-if="selectedTemplate === 3" label="Career Objective" optional class="mb-3"></v-textarea>
+                    <v-textarea v-model="resumeData.summary" :label="selectedTemplate == 3 ? 'Professional Summary *' : 'Career Objective *'" required class="mb-3"></v-textarea>
                 </v-card>
 
 
@@ -116,17 +114,18 @@
                                         <p>{{ experience.jobRole }}</p>
                                         <p>{{ experience.city }}, {{ experience.state }}</p>
                                         <p>{{ experience.startDate }} - {{ experience.endDate }}</p>
-                                        <p v-for="accomplishment in experience.accomplishments" :key="accomplishment">{{ accomplishment }}</p>
+                                        <p v-for="accomplishment in experience.accomplishments" :key="accomplishment">{{
+                                            accomplishment }}</p>
                                     </v-card-text>
                                 </v-card>
                             </v-col>
                         </v-row>
-                        <add-experience :userId="userId" :experienceList="currentExperiences"/>
+                        <add-experience :userId="userId" :experienceList="currentExperiences" />
                     </v-card>
                 </v-card>
 
                 <!-- Conditional Sections for Template 1, 3, and 4 -->
-                
+
                 <!-- Template 1 & 3: Skills Section -->
                 <v-card color="primary" v-if="selectedTemplate === 1 || selectedTemplate === 3" class="mb-4">
                     <v-card-title>
@@ -146,7 +145,7 @@
                             </v-card>
                         </v-col>
                     </v-row>
-                    <add-skill :userId="userId" :skillList="currentSkills"/>
+                    <add-skill :userId="userId" :skillList="currentSkills" />
                 </v-card>
 
                 <!-- Template 3: Honors & Awards Section -->
@@ -200,7 +199,7 @@
                 </v-card>
             </v-form>
         </v-col>
-        <v-btn to="build/saved" class="mt-4">Generate Resume</v-btn>
+        <v-btn class="mt-4" @click="saveResume">Generate Resume</v-btn>
     </v-container>
 </template>
 
@@ -213,12 +212,26 @@ import resumeServices from '@/services/resumeServices';
 import educationServices from '@/services/educationServices';
 import experienceServices from '@/services/experienceServices';
 import skillServices from '@/services/skillServices';
+import { useRouter } from 'vue-router';
 
 // creating important variables for the page
 
-let resumeName = ref("");
+let props = defineProps({
+    id: {
+        type: Number,
+    }
+})
+console.log("resume id:" + props.id)
+
+let selectedTemplate = ref(1);
 let user = Utils.getStore("user");
 let userId = user.userId;
+let resumeData = ref({
+    title: "newResume",
+    template: "",
+    summary: "",
+    userId: user.userId,
+})
 
 // start of constant for data editing
 
@@ -231,19 +244,27 @@ const states = [
     "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
 ];
 
-
-const selectedTemplate = ref(null);
 // start of lists of data for resume
 
 let currentEducations = ref([])
 let currentExperiences = ref([])
 let currentSkills = ref([])
 
-function handleTemplateSelection(id) {
-    selectedTemplate.value = id;
-}
-
 // functions that send requests to backend
+let router = useRouter();
+
+let saveResume = () => {
+    resumeData.value.template = selectedTemplate.value;
+    console.log(selectedTemplate.value);
+    resumeServices.create(resumeData.value)
+        .then((response) => {
+            console.log(response);
+            router.push("/build/saved");
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+}
 
 let deleteEducation = (educationId) => {
     educationServices.delete(educationId)
@@ -277,6 +298,13 @@ let deleteSkill = (skillId) => {
 }
 
 // getting user's data from the backend
+
+resumeServices.get(props.id).then((res) => {
+    let resume = res.data;
+    console.log(resume)
+    resumeData.value = resume;
+    selectedTemplate.value = resume.template;
+});
 
 educationServices.getAllForUser(userId).then((res) => {
     res.data.forEach((item) => {
