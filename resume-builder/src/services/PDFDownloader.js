@@ -1,9 +1,9 @@
 import { jsPDF } from 'jspdf';
 
-import { generateTemplate1 } from '../templates/Template1';
-import { generateTemplate2 } from '../templates/Template2';
-import { generateTemplate3 } from '../templates/Template3';
-import { generateTemplate4 } from '../templates/Template4';
+import { generateTemplate1 } from '../templates/pdf/Template1pdf';
+import { generateTemplate2 } from '../templates/pdf/Template2pdf';
+import { generateTemplate3 } from '../templates/pdf/Template3pdf';
+import { generateTemplate4 } from '../templates/pdf/Template4pdf';
 
 /**
  * Generate a PDF resume based on selected template.
