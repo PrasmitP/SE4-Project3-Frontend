@@ -281,6 +281,7 @@ let educationDialog = (education) => {
   editEducationRef.value.openDialog();
 }
 
+
 let deleteEducation = (educationId) => {
     educationServices.delete(educationId)
         .then((response) => {
