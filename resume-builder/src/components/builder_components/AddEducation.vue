@@ -5,7 +5,8 @@
 
   <!-- Dialog for Add/Edit -->
   <v-dialog v-model="showEducationDialog">
-    <v-card color="primary" max-width="80vw">
+    <v-container class="justify-center">
+      <v-card color="primary" max-width="95vw">
       <v-card-title>{{ mode === 'add' ? 'Add Education' : 'Edit' }}</v-card-title>
       <v-row>
         <v-col cols="4">
@@ -41,6 +42,7 @@
       <!-- Save Button -->
       <v-btn color="primary" @click="saveEducation">Save</v-btn>
     </v-card>
+  </v-container>
   </v-dialog>
 </template>
 

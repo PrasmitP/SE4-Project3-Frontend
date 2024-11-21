@@ -16,6 +16,9 @@ export default {
   update(id, data) {
     return apiClient.put(`/projects/${id}`, data);
   },
+  updateRelation(projectId, data) {
+    return apiClient.put(`/projects/updateRelation/${projectId}`, data);
+  },
   delete(id) {
     return apiClient.delete(`/projects/${id}`);
   },
