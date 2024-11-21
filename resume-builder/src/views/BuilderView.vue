@@ -2,7 +2,7 @@
     <v-container>
         <v-col>
             <v-row justify="center">
-                <v-card style="font-size: 30px; margin-bottom: 10px;">
+                <v-card color="transparent" style="font-size: 30px; margin-bottom: 10px;">
                     <span class="font-weight-light">{{ resumeData.title }}</span>
                 </v-card>
             </v-row>
@@ -28,33 +28,38 @@
                         </v-card-title>
                         <v-row>
                             <v-col>
-                                <v-text-field label="First Name *" type="text" required></v-text-field>
+                                <v-text-field v-model="userBody.fName" label="First Name *" type="text"
+                                    required></v-text-field>
                             </v-col>
                             <v-col>
-                                <v-text-field label="Last Name *" type="text" required></v-text-field>
+                                <v-text-field v-model="userBody.lName" label="Last Name *" type="text"
+                                    required></v-text-field>
                             </v-col>
                             <v-col>
-                                <v-text-field label="City *" type="text" required></v-text-field>
+                                <v-text-field v-model="userBody.city" label="City *" type="text"
+                                    required></v-text-field>
                             </v-col>
                             <v-col>
-                                <v-select label="State *" :items="states" required></v-select>
+                                <v-select v-model="userBody.state" label="State *" :items="states" required></v-select>
                             </v-col>
                         </v-row>
                     </v-card>
-
                     <v-card color="transparent" class="mb-3">
                         <v-card-title>
                             <h3>Contact and Links</h3>
                         </v-card-title>
                         <v-row>
                             <v-col>
-                                <v-text-field label="Phone Number *" type="phone-number" required></v-text-field>
+                                <v-text-field v-model="userBody.phoneNumber" label="Phone Number *" type="phone-number"
+                                    required></v-text-field>
                             </v-col>
                             <v-col>
-                                <v-text-field label="Email *" type="email" required></v-text-field>
+                                <v-text-field v-model="userBody.contactEmail" label="Email *" type="email"
+                                    required></v-text-field>
                             </v-col>
                             <v-col>
-                                <v-text-field label="LinkedIn/Website" type="text"></v-text-field>
+                                <v-text-field v-model="userBody.linkedInUrl" label="LinkedIn/Website"
+                                    type="text"></v-text-field>
                             </v-col>
                         </v-row>
                     </v-card>
@@ -231,7 +236,8 @@
                 </v-card>
             </v-form>
         </v-col>
-        <v-btn class="mt-4" @click="saveResume">Save and Generate Resume</v-btn>
+        <v-btn v-if="!resumeId" class="mt-4" @click="createResume">Create and Generate Resume</v-btn>
+        <v-btn v-else @click="saveResume">Save and Generate Resume</v-btn>
     </v-container>
 </template>
 
@@ -240,6 +246,7 @@ import { ref } from 'vue';
 
 import TemplatePicker from '../components/TemplatePicker.vue';
 import Utils from '@/config/utils';
+import userServices from '@/services/userServices';
 import resumeServices from '@/services/resumeServices';
 import educationServices from '@/services/educationServices';
 import experienceServices from '@/services/experienceServices';
@@ -267,7 +274,17 @@ let resumeData = ref({
     summary: "",
     userId: user.userId,
 })
-
+let userBody = ref({
+    fName: "",
+    lName: "",
+    city: "",
+    state: "",
+    phoneNumber: "",
+    email: "",
+    contactEmail: "",
+    linkedInUrl: "",
+})
+loadUserInfo();
 // start of functions for data selection
 
 const educationSelection = (educationId) => {
@@ -287,8 +304,10 @@ const educationSelection = (educationId) => {
 
     if (selectedEducations.value.includes(educationId)) {
         if (resumeId) updateSelection('remove');
+        else selectedEducations.value = selectedEducations.value.filter(edu => edu !== educationId);
     } else {
         if (resumeId) updateSelection('add');
+        else selectedEducations.value.push(educationId);
     }
 };
 const experienceSelection = (experienceId) => {
@@ -308,8 +327,10 @@ const experienceSelection = (experienceId) => {
 
     if (selectedExperiences.value.includes(experienceId)) {
         if (resumeId) updateSelection('remove');
+        else selectedExperiences.value = selectedExperiences.value.filter(exp => exp !== experienceId);
     } else {
         if (resumeId) updateSelection('add');
+        else selectedExperiences.value.push(experienceId);
     }
 };
 const skillSelection = (skillId) => {
@@ -329,8 +350,10 @@ const skillSelection = (skillId) => {
 
     if (selectedSkills.value.includes(skillId)) {
         if (resumeId) updateSelection('remove');
+        else selectedSkills.value = selectedSkills.value.filter(skl => skl !== skillId);
     } else {
         if (resumeId) updateSelection('add');
+        else selectedSkills.value.push(skillId);
     }
 };
 
@@ -347,33 +370,62 @@ const states = [
 
 // start of lists of data for resume
 
-getResumeData(resumeId);
+if (resumeId) getResumeData(resumeId);
 
 let currentEducations = ref([])
 let selectedEducations = ref([]);
-getSelectedEducation(resumeId);
+if (resumeId) getSelectedEducation(resumeId);
 getAllEducation(userId);
 
 let currentExperiences = ref([])
 let selectedExperiences = ref([]);
-getSelectedExperiences(resumeId);
+if (resumeId) getSelectedExperiences(resumeId);
 getAllExperiences(userId);
 
 let currentSkills = ref([])
 let selectedSkills = ref([]);
-getSelectedSkills(resumeId);
+if (resumeId) getSelectedSkills(resumeId);
 getAllSkills(userId);
-let currentProjects = ref([])
 
+let currentProjects = ref([])
+getAllProjects(userId);
 // functions that send requests to backend
 let router = useRouter();
 
-let saveResume = () => {
+let createResume = () => {
     resumeData.value.template = selectedTemplate.value;
-    console.log(selectedTemplate.value);
+    console.log("Creating Resume with template: " + selectedTemplate.value);
     resumeServices.create(resumeData.value)
         .then((response) => {
+            console.log("Created Resume!");
             console.log(response);
+            let newResumeId = response.data.resumeId
+            let newSelections = {
+                educationId: selectedEducations.value,
+                experienceId: selectedExperiences.value,
+                skillId: selectedSkills.value
+            }
+            resumeServices.addResumeEducations(newResumeId, newSelections)
+                .then((response) => {
+                    console.log("Added educations to resume:", response);
+                })
+                .catch((error) => {
+                    console.error("Error adding educations to resume:", error);
+                });
+            router.push("/build/saved");
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+}
+let saveResume = () => {
+    resumeData.value.template = selectedTemplate.value;
+    console.log("Saving Resume with template: " + selectedTemplate.value + " and resumeId: " + resumeId);
+    resumeServices.update(resumeId, resumeData.value)
+        .then((response) => {
+            console.log("Saved Resume!");
+            console.log(response);
+            let newResumeId = response.data.resumeId
             router.push("/build/saved");
         })
         .catch((error) => {
@@ -381,18 +433,11 @@ let saveResume = () => {
         })
 }
 
-
-let selectedEducationId = ref(null);
-let selectedEducation = ref(null);
-const editEducationRef = ref(null);
-
 let deleteEducation = (educationId) => {
     educationServices.delete(educationId)
         .then((response) => {
             console.log("Education deleted:", response);
             refreshEducationData();
-            selectedEducationId.value = null;
-            selectedEducation.value = null;
         })
         .catch((error) => {
             console.error("Error deleting education:", error);
@@ -444,7 +489,19 @@ let deleteProject = (projectId) => {
 
 // getting user's data from the backend
 
+// getting user's data from the backend
+function loadUserInfo() {
+    userServices.getUserForId(userId)
+        .then(response => {
+            userBody.value = response.data;
+        })
+        .catch(e => {
+            console.log(e);
+        });
+}
+
 function getResumeData(resumeId) {
+    console.log("Getting resume data for resume:" + resumeId)
     resumeServices.get(resumeId).then((res) => {
         let resume = res.data;
         console.log(resume)
@@ -472,14 +529,14 @@ function getSelectedEducation(resumeId) {
     });
 }
 
-
 function getAllExperiences(userId) {
+    console.log("Getting all experiences for user:" + userId)
     experienceServices.getAllForUser(userId).then((res) => {
         res.data.forEach((item) => {
             let experience = item;
-            console.log(item)
             currentExperiences.value.push(experience);
         });
+        console.log(currentExperiences.value)
     });
 }
 function getSelectedExperiences(resumeId) {
@@ -494,12 +551,13 @@ function getSelectedExperiences(resumeId) {
 }
 
 function getAllSkills(userId) {
+    console.log("Getting all skills for user:" + userId)
     skillServices.getAllForUser(userId).then((res) => {
         res.data.forEach((item) => {
             let skill = item;
-            console.log(item)
             currentSkills.value.push(skill);
         });
+        console.log(currentSkills.value)
     });
 }
 function getSelectedSkills(resumeId) {
@@ -512,14 +570,17 @@ function getSelectedSkills(resumeId) {
         console.log("Here is the updated list with SkillIds:" + selectedSkills.value);
     });
 }
-projectServices.getAllForUser(userId).then((res) => {
-    res.data.forEach((item) => {
-        let project = item;
-        console.log(item)
-        currentProjects.value.push(project);
-    });
-});
 
+function getAllProjects(userId) {
+    projectServices.getAllForUser(userId).then((res) => {
+        console.log("Getting all projects for user:" + userId)
+        res.data.forEach((item) => {
+            let project = item;
+            currentProjects.value.push(project);
+        });
+        console.log(currentProjects.value)
+    });
+}
 
 </script>
 
