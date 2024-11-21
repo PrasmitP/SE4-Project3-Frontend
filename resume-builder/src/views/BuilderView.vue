@@ -148,8 +148,8 @@
 
                 <!-- Conditional Sections for Template 1, 3, and 4 -->
 
-                <!-- Template 1 & 3: Skills Section -->
-                <v-card color="primary" v-if="selectedTemplate === 1 || selectedTemplate === 3" class="mb-4">
+                <!-- (templates 1, 3 and 4): Skills Section -->
+                <v-card color="primary" v-if="selectedTemplate != 2" class="mb-4">
                     <v-card-title>
                         <h2>Skills</h2>
                     </v-card-title>
@@ -173,32 +173,26 @@
                     <add-skill :userId="userId" :skillList="currentSkills" />
                 </v-card>
 
-                <!-- Template 3: Honors & Awards Section -->
-                <v-card color="primary" v-if="selectedTemplate === 3" class="mb-4">
+                <!-- (template 4 only) Honors/Awards/Certifications Section -->
+                <v-card color="primary" v-if="selectedTemplate == 4" class="mb-4">
                     <v-card-title>
-                        <h2>Honors & Awards</h2>
+                        <h2>Honors/Awards/Certifications</h2>
                     </v-card-title>
                     <v-row>
-                        <!-- Add Award Fields here -->
-                    </v-row>
-                    <add-award />
-                </v-card>
-
-                <!-- Template 4: Skills Section (Computer Skills only) -->
-                <v-card color="primary" v-if="selectedTemplate === 4" class="mb-4">
-                    <v-card-title>
-                        <h2>Computer Skills</h2>
-                    </v-card-title>
-                    <v-row>
-                        <v-col v-for="skill in currentSkills" :key="skill.skill" cols="2">
+                        <v-col v-for="award in currentAwards" cols="4">
                             <v-card class="mb-2">
                                 <v-card-title>
-                                    <h3>{{ skill.skill }}</h3>
+                                    <h3>{{ award.title }}</h3>
                                 </v-card-title>
+                                <v-card-text>
+                                    <p>{{ award.startDate }}</p>
+                                    <p>{{ award.endDate }}</p>
+                                    <p>{{ award.description }}</p>
+                                </v-card-text>
                             </v-card>
                         </v-col>
                     </v-row>
-                    <add-skill />
+                    <add-award />
                 </v-card>
 
                 <!-- Template 4: Projects Section -->
@@ -224,16 +218,6 @@
                     <add-project :userId="userId" :projectList="currentProject" />
                 </v-card>
 
-                <!-- Template 1: Accounting Hours Section -->
-                <v-card color="primary" v-if="selectedTemplate === 1" class="mb-4">
-                    <v-card-title>
-                        <h2>Accounting Hours</h2>
-                    </v-card-title>
-                    <v-row>
-                        <!-- Add Accounting Hours fields here -->
-                    </v-row>
-                    <add-accounting-hours />
-                </v-card>
             </v-form>
         </v-col>
         <v-btn v-if="!resumeId" class="mt-4" @click="createResume">Create and Generate Resume</v-btn>
@@ -251,6 +235,7 @@ import resumeServices from '@/services/resumeServices';
 import educationServices from '@/services/educationServices';
 import experienceServices from '@/services/experienceServices';
 import skillServices from '@/services/skillServices';
+import awardServices from '@/services/awardServices';
 import projectServices from '@/services/projectServices';
 import { useRouter } from 'vue-router';
 
@@ -403,6 +388,11 @@ let currentSkills = ref([])
 let selectedSkills = ref([]);
 if (resumeId) getSelectedSkills(resumeId);
 getAllSkills(userId);
+
+let currentAwards = ref([])
+let selectedAwards = ref([]);
+if (resumeId) getSelectedAwards(resumeId);
+getAllAwards(userId);
 
 let currentProjects = ref([])
 getAllProjects(userId);
@@ -590,6 +580,27 @@ function getSelectedSkills(resumeId) {
             selectedSkills.value.push(skill.skillId);
         });
         console.log("Here is the updated list with SkillIds:" + selectedSkills.value);
+    });
+}
+
+function getAllAwards(userId) {
+    console.log("Getting all awards for user:" + userId)
+    awardServices.getAllForUser(userId).then((res) => {
+        res.data.forEach((item) => {
+            let award = item;
+            currentAwards.value.push(award);
+        });
+        console.log(currentAwards.value)
+    });
+}
+function getSelectedAwards(resumeId) {
+    resumeServices.getResumeAwards(resumeId).then((res) => {
+        console.log("Getting selected awards for resume:" + resumeId)
+        res.data.forEach((item) => {
+            let award = item;
+            selectedAwards.value.push(award.awardId);
+        });
+        console.log("Here is the updated list with AwardIds:" + selectedAwards.value);
     });
 }
 
