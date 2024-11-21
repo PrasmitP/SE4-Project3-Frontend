@@ -62,7 +62,9 @@
                     <v-card-title>
                         <h3>Professional Summary</h3>
                     </v-card-title>
-                    <v-textarea v-model="resumeData.summary" :label="selectedTemplate == 3 ? 'Professional Summary *' : 'Career Objective *'" required class="mb-3"></v-textarea>
+                    <v-textarea v-model="resumeData.summary"
+                        :label="selectedTemplate == 3 ? 'Professional Summary *' : 'Career Objective *'" required
+                        class="mb-3"></v-textarea>
                 </v-card>
 
 
@@ -76,11 +78,16 @@
                     <v-card color="transparent" class="mb-3">
                         <v-row>
                             <v-col v-for="education in currentEducations" cols="6">
-
-                                <v-card
+                                    <v-card
                                     class="mb-2"
                                     :class="{ 'selected-card': selectedEducationId === education.educationId }"
                                     @click="educationDialog(education)">   
+                                    <v-btn @click="editEducation">Edit</v-btn>
+                                    <v-btn @click="deleteEducation(education.educationId)">Delete</v-btn>
+                                    <v-btn v-if="selectedEducations.includes(education.educationId)"
+                                        @click="educationSelection(education.educationId)">Selected</v-btn>
+                                    <v-btn v-else @click="educationSelection(education.educationId)">Select</v-btn>
+
                                     <v-card-title>
                                         <h3>{{ education.institutionName }}</h3>
                                     </v-card-title>
@@ -131,6 +138,9 @@
                             <v-col v-for="experience in currentExperiences" cols="6">
                                 <v-btn @click="editExperience">Edit</v-btn>
                                 <v-btn @click="deleteExperience(experience.experienceId)">Delete</v-btn>
+                                <v-btn v-if="selectedExperiences.includes(experience.experienceId)"
+                                    @click="experienceSelection(experience.experienceId)">Selected</v-btn>
+                                <v-btn v-else @click="experienceSelection(experience.experienceId)">Select</v-btn>
                                 <v-card class="mb-2">
                                     <v-card-title>
                                         <h3>{{ experience.companyName }}</h3>
@@ -161,6 +171,9 @@
                             <v-card class="mb-2">
                                 <v-btn @click="editSkill">Edit</v-btn>
                                 <v-btn @click="deleteSkill(skill.skillId)">Delete</v-btn>
+                                <v-btn v-if="selectedSkills.includes(skill.skillId)"
+                                    @click="skillSelection(skill.skillId)">Selected</v-btn>
+                                <v-btn v-else @click="skillSelection(skill.skillId)">Select</v-btn>
                                 <v-card-text v-if="skill.type == 'Language'">
                                     <h3>{{ skill.title }} - {{ skill.proficiency }}</h3>
                                 </v-card-text>
@@ -236,7 +249,7 @@
                 </v-card>
             </v-form>
         </v-col>
-        <v-btn class="mt-4" @click="saveResume">Generate Resume</v-btn>
+        <v-btn class="mt-4" @click="saveResume">Save and Generate Resume</v-btn>
     </v-container>
 </template>
 
@@ -259,7 +272,9 @@ let props = defineProps({
         type: Number,
     }
 })
-console.log("resume id:" + props.id)
+
+let resumeId = props.id;
+console.log("resume id:" + resumeId)
 
 let selectedTemplate = ref(1);
 let user = Utils.getStore("user");
@@ -270,6 +285,72 @@ let resumeData = ref({
     summary: "",
     userId: user.userId,
 })
+
+// start of functions for data selection
+
+const educationSelection = (educationId) => {
+    const updateSelection = (action) => {
+        let body = action === 'add' ? { addResumeId: resumeId } : { removeResumeId: resumeId };
+        educationServices.updateRelation(educationId, body).then(() => {
+            if (action === 'add') {
+                selectedEducations.value.push(educationId);
+                console.log(`Added education to resume: ${educationId}`);
+            } else {
+                selectedEducations.value = selectedEducations.value.filter(edu => edu !== educationId);
+                console.log(`Removed education from resume: ${educationId}`);
+            }
+            console.log(`Updated list: ${selectedEducations.value}`);
+        });
+    };
+
+    if (selectedEducations.value.includes(educationId)) {
+        if (resumeId) updateSelection('remove');
+    } else {
+        if (resumeId) updateSelection('add');
+    }
+};
+const experienceSelection = (experienceId) => {
+    const updateSelection = (action) => {
+        let body = action === 'add' ? { addResumeId: resumeId } : { removeResumeId: resumeId };
+        experienceServices.updateRelation(experienceId, body).then(() => {
+            if (action === 'add') {
+                selectedExperiences.value.push(experienceId);
+                console.log(`Added experience to resume. ExperienceId: ${experienceId}`);
+            } else {
+                selectedExperiences.value = selectedExperiences.value.filter(exp => exp !== experienceId);
+                console.log(`Removed experience from resume. ExperienceId: ${experienceId}`);
+            }
+            console.log(`Updated list: ${selectedExperiences.value}`);
+        });
+    };
+
+    if (selectedExperiences.value.includes(experienceId)) {
+        if (resumeId) updateSelection('remove');
+    } else {
+        if (resumeId) updateSelection('add');
+    }
+};
+const skillSelection = (skillId) => {
+    const updateSelection = (action) => {
+        let body = action === 'add' ? { addResumeId: resumeId } : { removeResumeId: resumeId };
+        skillServices.updateRelation(skillId, body).then(() => {
+            if (action === 'add') {
+                selectedSkills.value.push(skillId);
+                console.log(`Added skill to resume. skillId: ${skillId}`);
+            } else {
+                selectedSkills.value = selectedSkills.value.filter(skl => skl !== skillId);
+                console.log(`Removed skill from resume. skillId: ${skillId}`);
+            }
+            console.log(`Updated list: ${selectedSkills.value}`);
+        });
+    };
+
+    if (selectedSkills.value.includes(skillId)) {
+        if (resumeId) updateSelection('remove');
+    } else {
+        if (resumeId) updateSelection('add');
+    }
+};
 
 // start of constant for data editing
 
@@ -284,9 +365,22 @@ const states = [
 
 // start of lists of data for resume
 
+getResumeData(resumeId);
+
 let currentEducations = ref([])
+let selectedEducations = ref([]);
+getSelectedEducation(resumeId);
+getAllEducation(userId);
+
 let currentExperiences = ref([])
+let selectedExperiences = ref([]);
+getSelectedExperiences(resumeId);
+getAllExperiences(userId);
+
 let currentSkills = ref([])
+let selectedSkills = ref([]);
+getSelectedSkills(resumeId);
+getAllSkills(userId);
 let currentProjects = ref([])
 
 // functions that send requests to backend
@@ -384,33 +478,74 @@ let deleteProject = (projectId) => {
 
 // getting user's data from the backend
 
-resumeServices.get(props.id).then((res) => {
-    let resume = res.data;
-    console.log(resume)
-    resumeData.value = resume;
-    selectedTemplate.value = resume.template;
-});
+function getResumeData(resumeId) {
+    resumeServices.get(resumeId).then((res) => {
+        let resume = res.data;
+        console.log(resume)
+        resumeData.value = resume;
+        selectedTemplate.value = resume.template;
+    });
+}
 
-educationServices.getAllForUser(userId).then((res) => {
-    res.data.forEach((item) => {
-        let education = item;
-        console.log(item)
-        currentEducations.value.push(education);
+function getAllEducation(userId) {
+    educationServices.getAllForUser(userId).then((res) => {
+        res.data.forEach((item) => {
+            let education = item;
+            currentEducations.value.push(education);
+        });
     });
-});
-experienceServices.getAllForUser(userId).then((res) => {
-    res.data.forEach((item) => {
-        let experience = item;
-        console.log(item)
-        currentExperiences.value.push(experience);
+}
+function getSelectedEducation(resumeId) {
+    resumeServices.getResumeEducations(resumeId).then((res) => {
+        console.log("Getting selected education for resume:" + resumeId)
+        res.data.forEach((item) => {
+            let education = item;
+            selectedEducations.value.push(education.educationId);
+        });
+        console.log("Here is the updated list with educationIds:" + selectedEducations.value);
     });
-});
-skillServices.getAllForUser(userId).then((res) => {
-    res.data.forEach((item) => {
-        let skill = item;
-        console.log(item)
-        currentSkills.value.push(skill);
+}
+
+
+function getAllExperiences(userId) {
+    experienceServices.getAllForUser(userId).then((res) => {
+        res.data.forEach((item) => {
+            let experience = item;
+            console.log(item)
+            currentExperiences.value.push(experience);
+        });
     });
+}
+function getSelectedExperiences(resumeId) {
+    resumeServices.getResumeExperiences(resumeId).then((res) => {
+        console.log("Getting selected experience for resume:" + resumeId)
+        res.data.forEach((item) => {
+            let experience = item;
+            selectedExperiences.value.push(experience.experienceId);
+        });
+        console.log("Here is the updated list with experienceIds:" + selectedExperiences.value);
+    });
+}
+
+function getAllSkills(userId) {
+    skillServices.getAllForUser(userId).then((res) => {
+        res.data.forEach((item) => {
+            let skill = item;
+            console.log(item)
+            currentSkills.value.push(skill);
+        });
+    });
+}
+function getSelectedSkills(resumeId) {
+    resumeServices.getResumeSkills(resumeId).then((res) => {
+        console.log("Getting selected skills for resume:" + resumeId)
+        res.data.forEach((item) => {
+            let skill = item;
+            selectedSkills.value.push(skill.skillId);
+        });
+        console.log("Here is the updated list with SkillIds:" + selectedSkills.value);
+    });
+}
 });
 projectServices.getAllForUser(userId).then((res) => {
     res.data.forEach((item) => {
@@ -419,7 +554,6 @@ projectServices.getAllForUser(userId).then((res) => {
         currentProjects.value.push(project);
     });
 });
-
 
 
 </script>

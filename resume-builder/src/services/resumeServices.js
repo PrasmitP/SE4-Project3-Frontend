@@ -16,6 +16,15 @@ export default {
   update(id, data) {
     return apiClient.put(`/resumes/${id}`, data);
   },
+  getResumeEducations(id) {
+    return apiClient.get(`/resumes/${id}/educations`);
+  },
+  getResumeExperiences(id) {
+    return apiClient.get(`/resumes/${id}/experiences`);
+  },
+  getResumeSkills(id) {
+    return apiClient.get(`/resumes/${id}/skills`);
+  },
   delete(id) {
     return apiClient.delete(`/resumes/${id}`);
   },
