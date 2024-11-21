@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container v-if="isAllowed">
         <v-col>
             <v-row justify="center">
                 <v-card color="transparent" style="font-size: 30px; margin-bottom: 10px;">
@@ -265,15 +265,30 @@ let props = defineProps({
 let resumeId = props.id;
 console.log("resume id:" + resumeId)
 
+
+
+let isAllowed = ref(resumeId ? false : true);
+
 let selectedTemplate = ref(1);
 let user = Utils.getStore("user");
 let userId = user.userId;
-let resumeData = ref({
-    title: "newResume",
-    template: "",
-    summary: "",
-    userId: user.userId,
-})
+let resumeData
+if (resumeId) {
+    resumeData = ref({
+        title: "",
+        template: "",
+        summary: "",
+        userId: 0,
+    })
+}
+else {
+    resumeData = ref({
+        title: "newResume",
+        template: "",
+        summary: "",
+        userId: user.userId,
+    })
+}
 let userBody = ref({
     fName: "",
     lName: "",
@@ -370,7 +385,9 @@ const states = [
 
 // start of lists of data for resume
 
-if (resumeId) getResumeData(resumeId);
+if (resumeId) {
+    getResumeData(resumeId)
+}
 
 let currentEducations = ref([])
 let selectedEducations = ref([]);
@@ -494,6 +511,9 @@ function loadUserInfo() {
     userServices.getUserForId(userId)
         .then(response => {
             userBody.value = response.data;
+            console.log("Admin?")
+            console.log(userBody.value.isAdmin)
+            if (userBody.value.isAdmin) isAllowed.value = true;
         })
         .catch(e => {
             console.log(e);
@@ -504,8 +524,10 @@ function getResumeData(resumeId) {
     console.log("Getting resume data for resume:" + resumeId)
     resumeServices.get(resumeId).then((res) => {
         let resume = res.data;
+        console.log("Resume data:")
         console.log(resume)
         resumeData.value = resume;
+        if (resumeData.value.userId == userId) isAllowed.value = true;
         selectedTemplate.value = resume.template;
     });
 }
