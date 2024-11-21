@@ -19,6 +19,9 @@ export default {
   getResumeEducations(id) {
     return apiClient.get(`/resumes/${id}/educations`);
   },
+  addResumeEducations(id, data) {
+    return apiClient.post(`/resumes/${id}/educations`, data);
+  },
   getResumeExperiences(id) {
     return apiClient.get(`/resumes/${id}/experiences`);
   },
