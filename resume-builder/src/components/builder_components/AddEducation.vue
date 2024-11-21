@@ -1,7 +1,7 @@
 <template>
   <!-- Button to Open Add/Edit Dialog -->
-  <v-btn @click="openDialog" color="button">{{ mode === 'add' ? 'Add Education' : 'Edit Education' }}</v-btn>
-
+  <v-icon v-if="mode === 'add'" @click="openDialog" size="40px">mdi-plus</v-icon>
+  <v-icon v-else @click="openDialog">mdi-pencil</v-icon>
 
   <!-- Dialog for Add/Edit -->
   <v-dialog v-model="showEducationDialog">
@@ -9,76 +9,34 @@
       <v-card-title>{{ mode === 'add' ? 'Add Education' : 'Edit' }}</v-card-title>
       <v-row>
         <v-col cols="4">
-          <v-text-field
-            label="University Name *"
-            type="text"
-            required
-            v-model="education.institutionName"
-          ></v-text-field>
+          <v-text-field label="University Name *" type="text" required
+            v-model="education.institutionName"></v-text-field>
         </v-col>
         <v-col cols="3">
-          <v-text-field
-            label="City *"
-            type="text"
-            required
-            v-model="education.city"
-          ></v-text-field>
+          <v-text-field label="City *" type="text" required v-model="education.city"></v-text-field>
         </v-col>
         <v-col>
-          <v-select
-            label="State *"
-            :items="statesShort"
-            required
-            v-model="education.state"
-          ></v-select>
+          <v-select label="State *" :items="statesShort" required v-model="education.state"></v-select>
         </v-col>
         <v-col>
-          <v-text-field
-            label="Start Date *"
-            type="month"
-            required
-            v-model="education.startDate"
-          ></v-text-field>
+          <v-text-field label="Start Date *" type="month" required v-model="education.startDate"></v-text-field>
         </v-col>
         <v-col>
-          <v-text-field
-            label="End Date *"
-            type="month"
-            required
-            v-model="education.endDate"
-          ></v-text-field>
+          <v-text-field label="End Date *" type="month" required v-model="education.endDate"></v-text-field>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="4">
-          <v-text-field
-            label="Degree *"
-            type="text"
-            required
-            v-model="education.degree"
-          ></v-text-field>
+          <v-text-field label="Degree *" type="text" required v-model="education.degree"></v-text-field>
         </v-col>
         <v-col cols="2">
-          <v-text-field
-            label="GPA *"
-            type="number"
-            required
-            v-model="education.gpa"
-          ></v-text-field>
+          <v-text-field label="GPA *" type="number" required v-model="education.gpa"></v-text-field>
         </v-col>
       </v-row>
       <v-col>
-        <v-text-field
-          label="Awards"
-          type="text"
-          v-model="education.awards"
-        ></v-text-field>
+        <v-text-field label="Awards" type="text" v-model="education.awards"></v-text-field>
       </v-col>
-      <v-text-field
-        label="Coursework"
-        type="text"
-        v-model="education.coursework"
-      ></v-text-field>
+      <v-text-field label="Coursework" type="text" v-model="education.coursework"></v-text-field>
 
       <!-- Save Button -->
       <v-btn color="primary" @click="saveEducation">Save</v-btn>
@@ -197,4 +155,13 @@ const saveEducation = () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.v-icon {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.v-icon:hover {
+  transform: scale(1.2);
+}
+</style>
