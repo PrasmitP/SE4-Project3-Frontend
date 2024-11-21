@@ -16,6 +16,9 @@ export default {
   update(id, data) {
     return apiClient.put(`/skills/${id}`, data);
   },
+  updateRelation(skillId, data) {
+    return apiClient.put(`/skills/updateRelation/${skillId}`, data);
+  },
   delete(id) {
     return apiClient.delete(`/skills/${id}`);
   },
