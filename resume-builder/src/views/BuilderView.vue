@@ -116,21 +116,33 @@
 
                 <!-- Professional Experience Section -->
                 <v-card color="secondary" class="mb-4">
+
                     <v-card-title>
-                        <h2>Professional Experience</h2>
+                        <v-row>
+                            <h2>Professional Experience</h2>
+                            <v-spacer />
+                            <add-experience :userId="userId" :experienceList="currentExperiences" mode="add"
+                                @refresh-data="refreshExperienceData" />
+                        </v-row>
                     </v-card-title>
+
 
                     <v-card color="transparent" class="mb-3">
                         <v-row>
                             <v-col v-for="experience in currentExperiences" cols="6">
-                                <v-btn @click="editExperience">Edit</v-btn>
-                                <v-btn @click="deleteExperience(experience.experienceId)">Delete</v-btn>
-                                <v-btn v-if="selectedExperiences.includes(experience.experienceId)"
-                                    @click="experienceSelection(experience.experienceId)">Selected</v-btn>
-                                <v-btn v-else @click="experienceSelection(experience.experienceId)">Select</v-btn>
-                                <v-card class="mb-2">
+                                <v-card
+                                    :color="selectedExperiences.includes(experience.experienceId) ? 'selected' : 'unselected'"
+                                    :elevation="selectedExperiences.includes(experience.experienceId) ? 10 : 2"
+                                    @click="experienceSelection(experience.experienceId)" class=" mb-2">
                                     <v-card-title>
-                                        <h3>{{ experience.companyName }}</h3>
+                                        <v-row>
+                                            <h3>{{ experience.companyName }}</h3>
+                                            <v-spacer/>
+                                            <add-experience :userId="userId" :experienceList="currentExperiences"
+                                                mode="edit" :experienceToEdit="experience"
+                                                @refresh-data="refreshExperienceData" />
+                                            <v-icon @click="deleteExperience(experience.experienceId)">mdi-delete</v-icon>
+                                        </v-row>
                                     </v-card-title>
                                     <v-card-text>
                                         <p>{{ experience.jobRole }}</p>
@@ -142,39 +154,55 @@
                                 </v-card>
                             </v-col>
                         </v-row>
-                        <add-experience :userId="userId" :experienceList="currentExperiences" />
                     </v-card>
                 </v-card>
 
                 <!-- Conditional Sections for Template 1, 3, and 4 -->
 
+
                 <!-- (templates 1, 3 and 4): Skills Section -->
-                <v-card color="primary" v-if="selectedTemplate != 2" class="mb-4">
+                <v-card color="secondary" v-if="selectedTemplate != 2" class="mb-4">
+                
                     <v-card-title>
-                        <h2>Skills</h2>
+                        <v-row>
+                            <h2>Skills</h2>
+                            <v-spacer/>
+                            <add-skill :userId="userId" :skillList="currentSkills" mode="add"
+                            @refresh-data="refreshSkillData"/>
+                        </v-row>
                     </v-card-title>
-                    <v-row>
-                        <v-col v-for="skill in currentSkills" cols="2">
-                            <v-card class="mb-2">
-                                <v-btn @click="editSkill">Edit</v-btn>
-                                <v-btn @click="deleteSkill(skill.skillId)">Delete</v-btn>
-                                <v-btn v-if="selectedSkills.includes(skill.skillId)"
-                                    @click="skillSelection(skill.skillId)">Selected</v-btn>
-                                <v-btn v-else @click="skillSelection(skill.skillId)">Select</v-btn>
-                                <v-card-text v-if="skill.type == 'Language'">
-                                    <h3>{{ skill.title }} - {{ skill.proficiency }}</h3>
-                                </v-card-text>
-                                <v-card-title v-else>
-                                    <h3>{{ skill.title }}</h3>
-                                </v-card-title>
-                            </v-card>
-                        </v-col>
-                    </v-row>
-                    <add-skill :userId="userId" :skillList="currentSkills" />
+                        
+                    <v-card color="transparent" class="mb-3">
+                        <v-row>
+                            <v-col v-for="skill in currentSkills" cols="6">
+                                <v-card :color="selectedSkills.includes(skill.skillId) ? 'selected' : 'unselected'"
+                                    :elevation="selectedSkills.includes(skill.skillId) ? 10 : 2"
+                                    @click="skillSelection(skill.skillId)" class="mb-2">
+                                    <v-card-title>
+                                        <v-row>
+                                            <v-spacer/>
+                                            <add-skill :userId="userId" :skillList="currentSkills"
+                                                mode="edit" :skillToEdit="skill"
+                                                @refresh-data="refreshSkillData" />
+                                            <v-icon @click="deleteSkill(skill.skillId)">mdi-delete</v-icon>
+                                        </v-row>
+                                    </v-card-title>
+                                    <v-card-text v-if="skill.type == 'Language'">
+                                        <h3>{{ skill.title }} - {{ skill.proficiency }}</h3>
+                                    </v-card-text>
+                                    <v-card-title v-else>
+                                        <h3>{{ skill.title }}</h3>
+                                    </v-card-title>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </v-card>
                 </v-card>
+
 
                 <!-- (template 4 only) Honors/Awards/Certifications Section -->
                 <v-card color="primary" v-if="selectedTemplate == 4" class="mb-4">
+                
                     <v-card-title>
                         <h2>Honors/Awards/Certifications</h2>
                     </v-card-title>
@@ -196,28 +224,45 @@
                 </v-card>
 
                 <!-- Template 4: Projects Section -->
-                <v-card color="primary" v-if="selectedTemplate === 4" class="mb-4">
-                    <v-card-title>
-                        <h2>Projects</h2>
-                    </v-card-title>
-                    <v-row>
-                        <v-col v-for="project in currentProjects" cols="2">
-                            <v-btn @click="editProject">Edit</v-btn>
-                            <v-btn @click="deleteProject(project.projectId)">Delete</v-btn>
-                            <v-card class="mb-2">
-                                <v-card-title>
-                                    <h3>{{ project.projectName }}</h3>
-                                </v-card-title>
-                                <v-card-text>
-                                    <p>{{ project.startDate }}</p>
-                                    <p>{{ project.endDate }}</p>
-                                </v-card-text>
-                            </v-card>
-                        </v-col>
-                    </v-row>
-                    <add-project :userId="userId" :projectList="currentProject" />
-                </v-card>
 
+                <v-card color="secondary" v-if="selectedTemplate === 4" class="mb-4">
+                    <v-card-title>
+                        <v-row>
+                            <h2>Projects</h2>
+                            <v-spacer/>
+                            <add-project :userId="userId" :projectList="currentProjects" mode="add"
+                            @refresh-data="refreshProjectData"/>
+                        </v-row>
+                    </v-card-title>
+                        
+                    <v-card color="transparent" class="mb-3">
+                        <v-row>
+                            <v-col v-for="project in currentProjects" cols="6">
+                                <v-card :color="selectedProjects.includes(project.projectId) ? 'selected' : 'unselected'"
+                                    :elevation="selectedProjects.includes(project.projectId) ? 10 : 2"
+                                    @click="projectSelection(project.projectId)" class="mb-2">
+                                    <v-card-title>
+                                        <v-row>
+                                            <v-spacer/>
+                                            <add-project :userId="userId" :projectList="currentProjects"
+                                                mode="edit" :projectToEdit="project"
+                                                @refresh-data="refreshProjectData" />
+                                            <v-icon @click="deleteProject(project.projectId)">mdi-delete</v-icon>
+                                        </v-row>
+                                    </v-card-title>
+                                    <v-card-text>
+                                        <h3>{{ project.projectName }}</h3>
+                                    </v-card-text>
+                                    <v-card-text>
+                                        <p>{{ project.startDate }}</p>
+                                        <p>{{ project.endDate }}</p>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </v-card>
+                </v-card>
+                
             </v-form>
         </v-col>
         <v-btn v-if="!resumeId" class="mt-4" @click="createResume">Create and Generate Resume</v-btn>
@@ -310,6 +355,7 @@ const educationSelection = (educationId) => {
         else selectedEducations.value.push(educationId);
     }
 };
+
 const experienceSelection = (experienceId) => {
     const updateSelection = (action) => {
         let body = action === 'add' ? { addResumeId: resumeId } : { removeResumeId: resumeId };
@@ -333,6 +379,7 @@ const experienceSelection = (experienceId) => {
         else selectedExperiences.value.push(experienceId);
     }
 };
+
 const skillSelection = (skillId) => {
     const updateSelection = (action) => {
         let body = action === 'add' ? { addResumeId: resumeId } : { removeResumeId: resumeId };
@@ -354,6 +401,28 @@ const skillSelection = (skillId) => {
     } else {
         if (resumeId) updateSelection('add');
         else selectedSkills.value.push(skillId);
+    }
+};
+
+const projectSelection = (projectId) => {
+    const updateSelection = (action) => {
+        let body = action === 'add' ? { addResumeId: resumeId } : { removeResumeId: resumeId };
+        projectServices.updateRelation(projectId, body).then(() => {
+            if (action === 'add') {
+                selectedProjects.value.push(projectId);
+                console.log(`Added project to resume. projectId: ${projectId}`);
+            } else {
+                selectedProjects.value = selectedProjects.value.filter(pro => pro !== projectId);
+                console.log(`Removed project from resume. projectId: ${projectId}`);
+            }
+            console.log(`Updated list: ${selectedSkills.value}`);
+        });
+    };
+
+    if (selectedProjects.value.includes(projectId)) {
+        if (resumeId) updateSelection('remove');
+    } else {
+        if (resumeId) updateSelection('add');
     }
 };
 
@@ -389,6 +458,12 @@ let selectedSkills = ref([]);
 if (resumeId) getSelectedSkills(resumeId);
 getAllSkills(userId);
 
+let currentProjects = ref([])
+let selectedProjects = ref([]);
+getSelectedProjects(resumeId);
+getAllProjects(userId);
+
+
 let currentAwards = ref([])
 let selectedAwards = ref([]);
 if (resumeId) getSelectedAwards(resumeId);
@@ -401,7 +476,9 @@ let router = useRouter();
 
 let createResume = () => {
     resumeData.value.template = selectedTemplate.value;
+    
     console.log("Creating Resume with template: " + selectedTemplate.value);
+
     resumeServices.create(resumeData.value)
         .then((response) => {
             console.log("Created Resume!");
@@ -440,6 +517,18 @@ let saveResume = () => {
         })
 }
 
+let selectedExperience = ref(null);
+let selectedExperienceId = ref(null);
+
+let selectedEducationId = ref(null);
+let selectedEducation = ref(null);
+
+let selectedSkill = ref(null);
+let selectedSkillId = ref(null);
+
+let selectedProject = ref(null);
+let selectedProjectId = ref(null);
+
 let deleteEducation = (educationId) => {
     educationServices.delete(educationId)
         .then((response) => {
@@ -465,33 +554,73 @@ let refreshEducationData = () => {
 let deleteExperience = (experienceId) => {
     experienceServices.delete(experienceId)
         .then((response) => {
-            console.log(response);
-            currentExperiences.value = currentExperiences.value.filter(experience => experience.experienceId !== experienceId)
+            console.log("Experience deleted:", response);
+            refreshExperienceData();
+            selectedExperienceId.value = null;
+            selectedExperience.value = null;
         })
         .catch((error) => {
-            console.log(error);
+            console.error("Error deleting experience:", error);
+        });
+};
+let refreshExperienceData = () => {
+    experienceServices.getAllForUser(userId)
+        .then((res) => {
+            currentExperiences.value = res.data;
+            console.log("Experience data refreshed:", currentExperiences.value);
         })
-}
+        .catch((err) => {
+            console.error("Error refreshing experience data:", err);
+        });
+};
+
 let deleteSkill = (skillId) => {
     skillServices.delete(skillId)
         .then((response) => {
-            console.log(response);
-            currentSkills.value = currentSkills.value.filter(skill => skill.skillId !== skillId)
+            console.log("Skill deleted:", response);
+            refreshSkillData();
+            selectedSkillId.value = null;
+            selectedSkill.value = null;
         })
         .catch((error) => {
-            console.log(error);
+            console.error("Error deleting skill:", error);
+        });
+};
+let refreshSkillData = () => {
+    skillServices.getAllForUser(userId)
+        .then((res) => {
+            currentSkills.value = res.data;
+            console.log("Skill data refreshed:", currentSkills.value);
         })
-}
+        .catch((err) => {
+            console.error("Error refreshing skill data:", err);
+        });
+};
+
 let deleteProject = (projectId) => {
     projectServices.delete(projectId)
         .then((response) => {
-            console.log(response);
-            currentProjects.value = currentProjects.value.filter(project => project.projectId !== projectId)
+            console.log("Project deleted:", response);
+            refreshProjectData();
+            selectedProjectId.value = null;
+            selectedProject.value = null;
         })
         .catch((error) => {
-            console.log(error);
+            console.error("Error deleting project:", error);
         })
 }
+
+let refreshProjectData = () => {
+    projectServices.getAllForUser(userId)
+        .then((res) => {
+            currentProjects.value = res.data;
+            console.log("Project data refreshed:", currentProjects.value);
+        })
+        .catch((err) => {
+            console.error("Error refreshing project data:", err);
+        });
+};
+
 
 
 // getting user's data from the backend
@@ -583,6 +712,27 @@ function getSelectedSkills(resumeId) {
     });
 }
 
+function getAllProjects(userId) {
+    projectServices.getAllForUser(userId).then((res) => {
+        res.data.forEach((item) => {
+            let project = item;
+            console.log(item)
+            currentProjects.value.push(project);
+        });
+    });
+}
+
+function getSelectedProjects(resumeId) {
+    resumeServices.getResumeProjects(resumeId).then((res) => {
+        console.log("Getting selected projects for resume:" + resumeId)
+        res.data.forEach((item) => {
+            let project = item;
+            selectedProjects.value.push(project.projectId);
+        });
+        console.log("Here is the updated list with projectIds:" + selectedProjects.value);
+    });
+}
+
 function getAllAwards(userId) {
     console.log("Getting all awards for user:" + userId)
     awardServices.getAllForUser(userId).then((res) => {
@@ -601,17 +751,6 @@ function getSelectedAwards(resumeId) {
             selectedAwards.value.push(award.awardId);
         });
         console.log("Here is the updated list with AwardIds:" + selectedAwards.value);
-    });
-}
-
-function getAllProjects(userId) {
-    projectServices.getAllForUser(userId).then((res) => {
-        console.log("Getting all projects for user:" + userId)
-        res.data.forEach((item) => {
-            let project = item;
-            currentProjects.value.push(project);
-        });
-        console.log(currentProjects.value)
     });
 }
 
@@ -660,10 +799,4 @@ v-col {
     margin-top: 20px;
 }
 
-.selected-card {
-    background-color: #03203f;
-    color: white;
-    border: 2px solid #1565c0;
-    cursor: pointer;
-}
 </style>

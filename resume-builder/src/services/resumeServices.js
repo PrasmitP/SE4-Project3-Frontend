@@ -28,8 +28,13 @@ export default {
   getResumeSkills(id) {
     return apiClient.get(`/resumes/${id}/skills`);
   },
+
+  getResumeProjects(id) {
+    return apiClient.get(`/resumes/${id}/projects`);
+
   getResumeAwards(id) {
     return apiClient.get(`/resumes/${id}/awards`);
+
   },
   delete(id) {
     return apiClient.delete(`/resumes/${id}`);

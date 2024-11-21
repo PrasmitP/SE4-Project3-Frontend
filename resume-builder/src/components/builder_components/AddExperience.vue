@@ -1,41 +1,49 @@
 <template>
-    <v-btn @click="() => showExperienceAdd = true" color="button">Add Experience</v-btn>
-    <v-dialog v-model="showExperienceAdd">
-        <template v-slot:default="showExperienceAdd">
-            <v-container class="justify-center">
-                <v-card color="primary" max-width="95vw">
-                    <v-card-title>Add Experience</v-card-title>
-                    <v-text-field v-model="experience.companyName" label="Company Name *" type="text" required></v-text-field>
-                    <v-row>
-                        <v-col cols="4">
-                            <v-text-field v-model="experience.jobRole" label="Job Title *" type="text" required></v-text-field>
-                        </v-col>
-                        <v-col>
-                            <v-text-field v-model="experience.city" label="City *" required></v-text-field>
-                        </v-col>
-                        <v-col>
-                            <v-select v-model="experience.state" label="State *" :items="statesShort" required></v-select>
-                        </v-col>
-                        <v-col cols="2">
-                            <v-text-field v-model="experience.startDate" label="Start Date *" type="month" required></v-text-field>
-                        </v-col>
-                        <v-col cols="2">
-                            <v-text-field v-model="experience.endDate" label="End Date *" type="month" required></v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-textarea label="Accomplishment "
-                        placeholder="Accomplished {X} as measured by {Y}, by doing {Z} | Action + Project/Problem + Results = Accomplishment"></v-textarea>
-                    <v-btn>+</v-btn>
-                    <!-- Save Button -->
-                    <v-btn color="primary" @click="saveExperience">Save</v-btn>
-                </v-card>
-            </v-container>
-        </template>
+    <!-- Button to Open Add/Edit Dialog -->
+    <v-icon v-if="mode === 'add'" @click="openDialog" size="40px">mdi-plus</v-icon>
+    <v-icon v-else @click="openDialog">mdi-pencil</v-icon>
+  
+    <!-- Dialog for Add/Edit -->
+    <v-dialog v-model="showExperienceDialog">
+      <v-card color="secondary" max-width="95vw">
+        <v-card-title>{{ mode === 'add' ? 'Add experience' : 'Edit' }}</v-card-title>
+        <v-row>
+          <v-col cols="4">
+            <v-text-field label="Company Name" type="text" required
+              v-model="experience.companyName"></v-text-field>
+          </v-col>
+          <v-col cols="3">
+            <v-text-field label="Job Title" type="text" required v-model="experience.jobRole"></v-text-field>
+          </v-col>
+          <v-col>
+            <v-text-field label="City" type="text" required v-model="experience.city"></v-text-field>
+          </v-col>
+          <v-col>
+            <v-select label="State" :items="statesShort" required v-model="experience.state"></v-select>
+          </v-col>
+          <v-col>
+            <v-text-field label="Start Date *" type="month" required v-model="experience.startDate"></v-text-field>
+          </v-col>
+          <v-col>
+            <v-text-field label="End Date *" type="month" required v-model="experience.endDate"></v-text-field>
+          </v-col>
+        </v-row>
+            <v-textarea label="Accomplishment "
+            placeholder="Accomplished {X} as measured by {Y}, by doing {Z} | Action + Project/Problem + Results = Accomplishment"></v-textarea>
+  
+        <!-- Save Button -->
+        <v-btn color="primary" @click="saveexperience">Save</v-btn>
+      </v-card>
     </v-dialog>
-</template>
+  </template>
+
+
 <script setup>
 import { ref } from 'vue';
 import experienceServices from '@/services/experienceServices';
+
+const emit = defineEmits(["refresh-data"]);
+
 
 let statesShort = [
     'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME',
@@ -43,20 +51,27 @@ let statesShort = [
     'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
 ];
 
-let showExperienceAdd = ref(false);
+
 const props = defineProps({
-    userId: {
-        type: String,
-        required: true
-    },
-    experienceList: {
-        type: Array,
-        required: true
-    }
+  userId: {
+    type: String,
+    required: true,
+  },
+  experienceList: {
+    type: Array,
+    required: true,
+  },
+  mode: {
+    type: String,
+    default: "add",
+  },
+  experienceToEdit: {
+    type: Object,
+    default: () => ({}),
+  },
 });
 
-let experienceList = props.experienceList;
-let userId = props.userId;
+let showExperienceDialog = ref(false);
 
 let experience = ref({
     companyName: '',
@@ -65,19 +80,65 @@ let experience = ref({
     state: '',
     startDate: '',
     endDate: '',
-    userId: userId,
+    userId: props.userId,
 });
 
-const saveExperience = () => {
-    console.log(experience.value);
-    experienceServices.create(experience.value).then((res) => {
-        console.log(res);
-        showExperienceAdd.value = false;
-        experienceList.push(experience.value);
-    }).catch((err) => {
-        console.log(err);
-    });
+// Open the dialog for add or edit
+const openDialog = () => {
+  if (props.mode === "edit") {
+    // Pre-fill experience object for editing
+    experience.value = { ...props.experienceToEdit };
+  } else {
+    // Clear experience object for adding
+    experience.value = {
+    companyName: '',
+    jobRole: '',
+    city: '',
+    state: '',
+    startDate: '',
+    endDate: '',
+    userId: props.userId,
+    };
+  }
+  showExperienceDialog.value = true;
 };
 
+// Save experience (Add or Edit)
+const saveexperience = () => {
+  if (props.mode === "add") {
+    // Add new experience
+    experienceServices
+      .create(experience.value)
+      .then((res) => {
+        console.log("experience added:", res);
+        props.experienceList.push(experience.value); // Update the list
+        showExperienceDialog.value = false; // Close dialog
+        emit("refresh-data");
+
+      })
+      .catch((err) => {
+        console.error("Error adding experience:", err);
+      });
+  } else if (props.mode === "edit") {
+    // Update existing experience
+    experienceServices
+      .update(experience.value.experienceId, experience.value)
+      .then((res) => {
+        console.log("experience updated:", res);
+        const index = props.experienceList.findIndex(
+          (e) => e.experienceId === experience.value.experienceId
+        );
+        if (index !== -1) {
+          props.experienceList[index] = experience.value; // Update the list
+        }
+        showExperienceDialog.value = false; // Close dialog
+        emit("refresh-data");
+
+      })
+      .catch((err) => {
+        console.error("Error updating experience:", err);
+      });
+  }
+};
 </script>
 <style scoped></style>
