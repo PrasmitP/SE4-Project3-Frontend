@@ -69,27 +69,33 @@
 
 
                 <!-- Education Section -->
-                <v-card color="primary" class="mb-4">
+                <v-card color="secondary" class="mb-4">
 
                     <v-card-title>
-                        <h2>Education</h2>
+                        <v-row>
+                            <h2>Education</h2>
+                            <v-spacer />
+                            <add-education :userId="userId" :educationList="currentEducations" mode="add"
+                                @refresh-data="refreshEducationData" />
+                        </v-row>
                     </v-card-title>
 
                     <v-card color="transparent" class="mb-3">
                         <v-row>
                             <v-col v-for="education in currentEducations" cols="6">
-                                    <v-card
-                                    class="mb-2"
-                                    :class="{ 'selected-card': selectedEducationId === education.educationId }"
-                                    @click="educationDialog(education)">   
-                                    <v-btn @click="editEducation">Edit</v-btn>
-                                    <v-btn @click="deleteEducation(education.educationId)">Delete</v-btn>
-                                    <v-btn v-if="selectedEducations.includes(education.educationId)"
-                                        @click="educationSelection(education.educationId)">Selected</v-btn>
-                                    <v-btn v-else @click="educationSelection(education.educationId)">Select</v-btn>
-
+                                <v-card
+                                    :color="selectedEducations.includes(education.educationId) ? 'selected' : 'unselected'"
+                                    :elevation="selectedEducations.includes(education.educationId) ? 10 : 2"
+                                    @click="educationSelection(education.educationId)" class=" mb-2">
                                     <v-card-title>
-                                        <h3>{{ education.institutionName }}</h3>
+                                        <v-row>
+                                            <h3>{{ education.institutionName }}</h3>
+                                            <v-spacer />
+                                            <add-education :userId="userId" :educationList="currentEducations"
+                                                mode="edit" :educationToEdit="education"
+                                                @refresh-data="refreshEducationData" />
+                                            <v-icon @click="deleteEducation(education.educationId)">mdi-delete</v-icon>
+                                        </v-row>
                                     </v-card-title>
                                     <v-card-text>
                                         <p>{{ education.degree || education.bachalorName }}</p>
@@ -100,30 +106,6 @@
                                 </v-card>
                             </v-col>
                         </v-row>
-
-                        <add-education 
-                            :userId="userId" 
-                            :educationList="currentEducations" 
-                            mode="add" 
-                            @refresh-data="refreshEducationData"
-                        />
-                        <add-education
-                            v-if="selectedEducationId"
-                            ref="editEducationRef"
-                            :userId="userId"
-                            :educationList="currentEducations"
-                            mode="edit"
-                            :educationToEdit="selectedEducation"
-                            @refresh-data="refreshEducationData"
-                        />
-                        <v-btn
-                            v-if="selectedEducationId"
-                            class="mt-0"
-                            color="red"
-                            @click="deleteSelectedEducation"
-                        >
-                            Delete Education
-                        </v-btn>
                     </v-card>
                 </v-card>
 
@@ -222,20 +204,20 @@
                     <v-row>
                         <v-col v-for="project in currentProjects" cols="2">
                             <v-btn @click="editProject">Edit</v-btn>
-                                <v-btn @click="deleteProject(project.projectId)">Delete</v-btn>
-                                <v-card class="mb-2">
-                                    <v-card-title>
-                                        <h3>{{ project.projectName }}</h3>
-                                    </v-card-title>
-                                    <v-card-text>
-                                        <p>{{ project.startDate }}</p>
-                                        <p>{{ project.endDate }}</p>
-                                    </v-card-text>
-                                </v-card>
-                            </v-col>
-                        </v-row>
-                        <add-project :userId="userId" :projectList="currentProject" />
-                    </v-card>
+                            <v-btn @click="deleteProject(project.projectId)">Delete</v-btn>
+                            <v-card class="mb-2">
+                                <v-card-title>
+                                    <h3>{{ project.projectName }}</h3>
+                                </v-card-title>
+                                <v-card-text>
+                                    <p>{{ project.startDate }}</p>
+                                    <p>{{ project.endDate }}</p>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                    <add-project :userId="userId" :projectList="currentProject" />
+                </v-card>
 
                 <!-- Template 1: Accounting Hours Section -->
                 <v-card color="primary" v-if="selectedTemplate === 1" class="mb-4">
@@ -404,44 +386,28 @@ let selectedEducationId = ref(null);
 let selectedEducation = ref(null);
 const editEducationRef = ref(null);
 
-let educationDialog = (education) => {
-
-  if (selectedEducationId.value === education.educationId) {
-    selectedEducationId.value = null;
-    selectedEducation.value = null;
-  } else {
-    selectedEducationId.value = education.educationId;
-    selectedEducation.value = education;
-    editEducationRef.value.openDialog();
-  }
-};
-
-let deleteSelectedEducation = () => {
-  if (selectedEducationId.value) {
-    educationServices.delete(selectedEducationId.value)
-      .then((response) => {
-        console.log("Education deleted:", response);
-        refreshEducationData();
-        selectedEducationId.value = null;
-        selectedEducation.value = null;
-      })
-      .catch((error) => {
-        console.error("Error deleting education:", error);
-      });
-  } else {
-    console.warn("No education selected for deletion.");
-  }
+let deleteEducation = (educationId) => {
+    educationServices.delete(educationId)
+        .then((response) => {
+            console.log("Education deleted:", response);
+            refreshEducationData();
+            selectedEducationId.value = null;
+            selectedEducation.value = null;
+        })
+        .catch((error) => {
+            console.error("Error deleting education:", error);
+        });
 };
 
 let refreshEducationData = () => {
-  educationServices.getAllForUser(userId)
-    .then((res) => {
-      currentEducations.value = res.data;
-      console.log("Education data refreshed:", currentEducations.value);
-    })
-    .catch((err) => {
-      console.error("Error refreshing education data:", err);
-    });
+    educationServices.getAllForUser(userId)
+        .then((res) => {
+            currentEducations.value = res.data;
+            console.log("Education data refreshed:", currentEducations.value);
+        })
+        .catch((err) => {
+            console.error("Error refreshing education data:", err);
+        });
 };
 
 let deleteExperience = (experienceId) => {
@@ -546,7 +512,6 @@ function getSelectedSkills(resumeId) {
         console.log("Here is the updated list with SkillIds:" + selectedSkills.value);
     });
 }
-});
 projectServices.getAllForUser(userId).then((res) => {
     res.data.forEach((item) => {
         let project = item;
@@ -582,6 +547,15 @@ v-card {
 
 v-row {
     margin-bottom: 10px;
+}
+
+.v-icon {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.v-icon:hover {
+    transform: scale(1.2);
 }
 
 v-col {
