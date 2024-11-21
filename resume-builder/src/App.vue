@@ -26,14 +26,15 @@ import userServices from './services/userServices';
 let isLogged = ref(Utils.isLogged())
 let user = Utils.getStore("user")
 let isAdmin = ref(false)
-userServices.getUserForId(user.userId).then((res) => {
-  isAdmin.value = res.data.isAdmin;
-  console.log(res.data)
-  console.log(isAdmin)
-}).catch((err) => {
-  console.log(err)
-});
-
+if (user) {
+  userServices.getUserForId(user.userId).then((res) => {
+    isAdmin.value = res.data.isAdmin;
+    console.log(res.data)
+    console.log(isAdmin)
+  }).catch((err) => {
+    console.log(err)
+  });
+}
 let logoutUser = () => {
   Utils.removeItem("user")
 }
