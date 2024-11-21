@@ -1,19 +1,18 @@
 <template>
-    <div class="wrapper" @mouseover="showIconRow=true" @mouseout="showIconRow=false">
-        <IconRow :style="{
+    <div class="wrapper" @mouseover="showIconRow = true" @mouseout="showIconRow = false">
+        <IconRow @edit-clicked="goToEdit" @download-clicked="downloadPDF" @delete-clicked="deleteResume" :style="{
             visibility: showIconRow && !newResumeBool ? 'visible' : 'hidden',
-        }"/>
-        <div class="resumePreview" @click="goToBuild">
+        }" />
 
-            <div v-if="!props.resumeObject" class="circle">
-                <div class="plusSign">+</div>
+        <v-card class="resumePreview" v-if="newResumeBool" @click="goToBuild">
+            <div class="circle">
+                <v-icon class="plusSign">mdi-plus</v-icon>
             </div>
-            
-            <div v-else>
-                <p class="textInside">{{ props.resumeObject.exampleText }}</p>
-            
-            </div>
-        </div>
+        </v-card>
+
+        <v-card class="resumePreview" v-else @click="$emit('showPreviewEmit')">
+        </v-card>
+
         <p>{{ resumeName }}</p>
     </div>
 </template>
@@ -21,20 +20,36 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
+import { generatePDF } from '@/services/PDFDownloader';
+import resumeServices from '@/services/resumeServices';
 
 const props = defineProps({
     resumeObject: {
-        type: Object,
+        type: Object
     }
 });
 
-let newResumeBool = props.resumeObject ? false : true;
-let resumeName = newResumeBool ? "New Resume" : props.resumeObject.resumeName;
+let resumeObject = props.resumeObject
+console.log(resumeObject)
+let newResumeBool = resumeObject ? false : true;
+let resumeName = newResumeBool ? "New Resume" : resumeObject.title;
+
+let resumeId = newResumeBool ? 0 : resumeObject.resumeId;
+let previewResume = ref(false);
 let showIconRow = ref(false);
 
 const router = useRouter();
-const goToBuild = () => {
-    router.push('/build');
+const goToBuild = () => { router.push('/build'); }
+const goToEdit = () => { router.push('/edit/' + resumeId); }
+const downloadPDF = () => { generatePDF(resumeObject); }
+const deleteResume = () => {
+    resumeServices.delete(resumeId)
+        .then(() => {
+            console.log("Resume deleted");
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 }
 </script>
 
@@ -53,12 +68,13 @@ p {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin:  3px;
+    margin: 10px;
     width: fit-content;
 }
+
 .resumePreview {
-    width: 90px;
-    height: 160px;
+    width: 135px;
+    height: 240px;
     background-color: lightgrey;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -83,8 +99,8 @@ p {
 }
 
 .circle {
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     background-color: white;
     display: flex;

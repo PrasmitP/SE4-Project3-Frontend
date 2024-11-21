@@ -7,13 +7,16 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    AppFooter: typeof import('./src/components/AppFooter.vue')['default']
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    AddEducation: typeof import('./src/components/builder_components/AddEducation.vue')['default']
+    AddExperience: typeof import('./src/components/builder_components/AddExperience.vue')['default']
+    AddProject: typeof import('./src/components/builder_components/AddProject.vue')['default']
+    AddSkill: typeof import('./src/components/builder_components/AddSkill.vue')['default']
     IconRow: typeof import('./src/components/IconRow.vue')['default']
     Resume: typeof import('./src/components/Resume.vue')['default']
+    ResumePreview: typeof import('./src/components/ResumePreview.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SocialLogin: typeof import('./src/components/SocialLogin.vue')['default']
-    Template: typeof import('./src/components/Template.vue')['default']
+    TemplatePicker: typeof import('./src/components/TemplatePicker.vue')['default']
   }
 }
