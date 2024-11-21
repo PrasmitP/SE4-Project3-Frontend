@@ -31,10 +31,9 @@ export default {
 
   getResumeProjects(id) {
     return apiClient.get(`/resumes/${id}/projects`);
-
+  },
   getResumeAwards(id) {
     return apiClient.get(`/resumes/${id}/awards`);
-
   },
   delete(id) {
     return apiClient.delete(`/resumes/${id}`);

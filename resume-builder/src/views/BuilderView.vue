@@ -469,7 +469,6 @@ let selectedAwards = ref([]);
 if (resumeId) getSelectedAwards(resumeId);
 getAllAwards(userId);
 
-let currentProjects = ref([])
 getAllProjects(userId);
 // functions that send requests to backend
 let router = useRouter();
