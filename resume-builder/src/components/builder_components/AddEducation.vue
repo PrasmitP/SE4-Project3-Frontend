@@ -27,7 +27,7 @@
       </v-row>
       <v-row>
         <v-col cols="4">
-          <v-text-field label="Degree *" type="text" required v-model="education.degree"></v-text-field>
+          <v-text-field label="Degree *" type="text" required v-model="education.bachalorName"></v-text-field>
         </v-col>
         <v-col cols="2">
           <v-text-field label="GPA *" type="number" required v-model="education.gpa"></v-text-field>
@@ -48,9 +48,7 @@
 import { ref } from "vue";
 import educationServices from "@/services/educationServices";
 
-
 const emit = defineEmits(["refresh-data"]);
-
 
 // Props
 const props = defineProps({
@@ -80,7 +78,7 @@ let education = ref({
   state: "",
   startDate: "",
   endDate: "",
-  degree: "",
+  bachalorName: "",
   gpa: "",
   awards: "",
   coursework: "",
