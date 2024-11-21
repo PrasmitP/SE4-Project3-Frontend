@@ -16,6 +16,9 @@ export default {
   update(id, data) {
     return apiClient.put(`/experiences/${id}`, data);
   },
+  updateRelation(experienceId, data) {
+    return apiClient.put(`/experiences/updateRelation/${experienceId}`, data);
+  },
   delete(id) {
     return apiClient.delete(`/experiences/${id}`);
   },

@@ -10,7 +10,7 @@
             </div>
         </v-card>
 
-        <v-card class="resumePreview" v-else @click="$emit('showPreviewEmit')">
+        <v-card class="resumePreview" v-else @click="showPreview">
         </v-card>
 
         <p>{{ resumeName }}</p>
@@ -35,8 +35,12 @@ let newResumeBool = resumeObject ? false : true;
 let resumeName = newResumeBool ? "New Resume" : resumeObject.title;
 
 let resumeId = newResumeBool ? 0 : resumeObject.resumeId;
-let previewResume = ref(false);
 let showIconRow = ref(false);
+
+const emit = defineEmits(['showPreviewEmit']);
+function showPreview() {
+    emit('showPreviewEmit', resumeId)
+}
 
 const router = useRouter();
 const goToBuild = () => { router.push('/build'); }
