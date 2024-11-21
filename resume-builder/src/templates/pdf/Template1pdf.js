@@ -12,7 +12,7 @@ export function generateTemplate1(doc, resumeData) {
     doc.setFontSize(10);
     doc.setFont("times", "normal");
     doc.text(
-        `${resumeData.city}, ${resumeData.state} | ${resumeData.phoneNumber} | ${resumeData.email} | ${resumeData.linkedInUrl}`, 105, 28, { align: "center" }
+        `${resumeData.city}, ${resumeData.state} | ${resumeData.phoneNumber} | ${resumeData.email} ${resumeData.linkedInUrl ? "| " + resumeData.linkedInUrl : " "}`, 105, 28, { align: "center" }
     );
 
     // Professional Summary
@@ -46,7 +46,7 @@ export function generateTemplate1(doc, resumeData) {
         doc.text(`${education.bachalorName}`, 10, educationY);
         educationY += 7;
         doc.text(`GPA: ${education.gpa}`, 10, educationY);
-        educationY += 10; 
+        educationY += 10;
     });
 
 
@@ -60,28 +60,19 @@ export function generateTemplate1(doc, resumeData) {
 
     // Job Entry
     doc.setFont("times", "italic");
-    doc.text(
-        `${resumeData.companyName || "Employer"}, ${resumeData.jobTitle || "Your Title"}, ${resumeData.companyCity || "City"}, ${resumeData.companyState || "State"}`, 10, 127
-    );
-    doc.setFont("times", "normal");
-    doc.text(
-        `${resumeData.companyStart || "Start Month, Year"} - ${resumeData.companyEnd || "End Month, Year"}`, 160, 127, { align: "right" }
-    );
-
-    const workBullets = [
-        resumeData.workBullet1 || "Accomplished {X} as measured by {Y}, by doing {Z}",
-        resumeData.workBullet2 || "Action + Project/Problem + Results = Accomplishment",
-        resumeData.workBullet3 || "Three bullet points is sufficient for the most relevant position."
-    ];
-
-    let bulletY = 134;
-    workBullets.forEach((bullet) => {
-        const lines = doc.splitTextToSize(bullet, 180);
-        const bulletHeight = lines.length * 4;
-
-        doc.circle(14, bulletY, 1, 'F');
-        doc.text(lines, 18, bulletY + 1);
-        bulletY += bulletHeight + 3;
+    let experienceY = 127;
+    resumeData.experiences.forEach((experience) => {
+        doc.setFont("times", "italic");
+        doc.text(
+            `${experience.companyName}, ${experience.jobTitle}, ${experience.city}, ${experience.state}`, 10, experienceY
+        );
+        doc.setFont("times", "normal");
+        doc.text(
+            `${experience.startDate} - ${experience.endDate}`, 160, experienceY, { align: "right" }
+        );
+        experienceY += 7;
+        doc.text(`${experience.achievement}`, 10, experienceY);
+        experienceY += 10;
     });
 
     // Skills and Other Sections
@@ -89,6 +80,6 @@ export function generateTemplate1(doc, resumeData) {
     doc.text("SKILLS | LEADERSHIP SKILLS | ACTIVITIES | EXTRACURRICULAR ACTIVITIES", 10, 188);
     doc.line(10, 190, 200, 190);
     doc.setFont("times", "italic");
-    doc.text(`Hard Skills / Computer Skills: ${resumeData.skills || "(optional)"}`, 10, 196);
-    doc.text(`Language Skills: ${resumeData.languageSkills || "(optional - include levels of proficiency)"}`, 10, 202);
+    doc.text(`Hard Skills / Computer Skills: ${resumeData.skills.join(", ") || ""}`, 10, 196);
+    doc.text(`Language Skills: ${resumeData.languageSkills || ""}`, 10, 202);
 }

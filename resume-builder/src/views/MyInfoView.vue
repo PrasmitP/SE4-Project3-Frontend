@@ -61,102 +61,102 @@
                 <!-- Education Section -->
                 <v-card color="secondary" class="mb-4">
 
-<v-card-title>
-    <v-row>
-        <h2>Education</h2>
-        <v-spacer />
-        <add-education :userId="userId" :educationList="currentEducations" mode="add"
-            @refresh-data="refreshEducationData" />
-    </v-row>
-</v-card-title>
+                    <v-card-title>
+                        <v-row>
+                            <h2>Education</h2>
+                            <v-spacer />
+                            <add-education :userId="userId" :educationList="currentEducations" mode="add"
+                                @refresh-data="refreshEducationData" />
+                        </v-row>
+                    </v-card-title>
 
-<v-card color="transparent" class="mb-3">
-    <v-row>
-        <v-col v-for="education in currentEducations" cols="6">
-            <v-card class=" mb-2">
-                <v-card-title>
-                    <v-row>
-                        <h3>{{ education.institutionName }}</h3>
-                        <v-spacer />
-                        <add-education :userId="userId" :educationList="currentEducations"
-                            mode="edit" :educationToEdit="education"
-                            @refresh-data="refreshEducationData" />
-                        <v-icon @click="deleteEducation(education.educationId)">mdi-delete</v-icon>
-                    </v-row>
-                </v-card-title>
-                <v-card-text>
-                    <p>{{ education.degree || education.bachalorName }}</p>
-                    <p>{{ education.city }}, {{ education.state }}</p>
-                    <p>{{ education.startDate }} - {{ education.endDate }}</p>
-                    <p>GPA: {{ education.gpa }}</p>
-                </v-card-text>
-            </v-card>
-        </v-col>
-    </v-row>
-</v-card>
-</v-card>
+                    <v-card color="transparent" class="mb-3">
+                        <v-row>
+                            <v-col v-for="education in currentEducations" cols="6">
+                                <v-card class=" mb-2">
+                                    <v-card-title>
+                                        <v-row>
+                                            <h3>{{ education.institutionName }}</h3>
+                                            <v-spacer />
+                                            <add-education :userId="userId" :educationList="currentEducations"
+                                                mode="edit" :educationToEdit="education"
+                                                @refresh-data="refreshEducationData" />
+                                            <v-icon @click="deleteEducation(education.educationId)">mdi-delete</v-icon>
+                                        </v-row>
+                                    </v-card-title>
+                                    <v-card-text>
+                                        <p>{{ education.degree || education.bachalorName }}</p>
+                                        <p>{{ education.city }}, {{ education.state }}</p>
+                                        <p>{{ education.startDate }} - {{ education.endDate }}</p>
+                                        <p>GPA: {{ education.gpa }}</p>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </v-card>
+                </v-card>
 
                 <!-- Professional Experience Section -->
                 <v-card color="secondary" class="mb-4">
 
-<v-card-title>
-    <v-row>
-        <h2>Professional Experience</h2>
-        <v-spacer />
-        <add-experience :userId="userId" :experienceList="currentExperiences" mode="add"
-            @refresh-data="refreshExperienceData" />
-    </v-row>
-</v-card-title>
+                    <v-card-title>
+                        <v-row>
+                            <h2>Professional Experience</h2>
+                            <v-spacer />
+                            <add-experience :userId="userId" :experienceList="currentExperiences" mode="add"
+                                @refresh-data="refreshExperienceData" />
+                        </v-row>
+                    </v-card-title>
 
 
-<v-card color="transparent" class="mb-3">
-    <v-row>
-        <v-col v-for="experience in currentExperiences" cols="6">
-            <v-card class=" mb-2">
-                <v-card-title>
-                    <v-row>
-                        <h3>{{ experience.companyName }}</h3>
-                        <v-spacer/>
-                        <add-experience :userId="userId" :experienceList="currentExperiences"
-                            mode="edit" :experienceToEdit="experience"
-                            @refresh-data="refreshExperienceData" />
-                        <v-icon @click="deleteExperience(experience.experienceId)">mdi-delete</v-icon>
-                    </v-row>
-                </v-card-title>
-                <v-card-text>
-                    <p>{{ experience.jobRole }}</p>
-                    <p>{{ experience.city }}, {{ experience.state }}</p>
-                    <p>{{ experience.startDate }} - {{ experience.endDate }}</p>
-                    <p v-for="accomplishment in experience.accomplishments" :key="accomplishment">{{
-                        accomplishment }}</p>
-                </v-card-text>
-            </v-card>
-        </v-col>
-    </v-row>
-</v-card>
-</v-card>
+                    <v-card color="transparent" class="mb-3">
+                        <v-row>
+                            <v-col v-for="experience in currentExperiences" cols="6">
+                                <v-card class=" mb-2">
+                                    <v-card-title>
+                                        <v-row>
+                                            <h3>{{ experience.companyName }}</h3>
+                                            <v-spacer />
+                                            <add-experience :userId="userId" :experienceList="currentExperiences"
+                                                mode="edit" :experienceToEdit="experience"
+                                                @refresh-data="refreshExperienceData" />
+                                            <v-icon
+                                                @click="deleteExperience(experience.experienceId)">mdi-delete</v-icon>
+                                        </v-row>
+                                    </v-card-title>
+                                    <v-card-text>
+                                        <p>{{ experience.jobRole }}</p>
+                                        <p>{{ experience.city }}, {{ experience.state }}</p>
+                                        <p>{{ experience.startDate }} - {{ experience.endDate }}</p>
+                                        <p v-for="accomplishment in experience.accomplishments" :key="accomplishment">{{
+                                            accomplishment }}</p>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </v-card>
+                </v-card>
 
                 <!-- Skills -->
                 <v-card color="primary" class="mb-4">
                     <v-card-title>
                         <v-row>
                             <h2>Skills</h2>
-                            <v-spacer/>
+                            <v-spacer />
                             <add-skill :userId="userId" :skillList="currentSkills" mode="add"
-                            @refresh-data="refreshSkillData"/>
+                                @refresh-data="refreshSkillData" />
                         </v-row>
                     </v-card-title>
-                        
+
                     <v-card color="transparent" class="mb-3">
                         <v-row>
                             <v-col v-for="skill in currentSkills" cols="6">
                                 <v-card class="mb-2">
                                     <v-card-title>
                                         <v-row>
-                                            <v-spacer/>
-                                            <add-skill :userId="userId" :skillList="currentSkills"
-                                                mode="edit" :skillToEdit="skill"
-                                                @refresh-data="refreshSkillData" />
+                                            <v-spacer />
+                                            <add-skill :userId="userId" :skillList="currentSkills" mode="edit"
+                                                :skillToEdit="skill" @refresh-data="refreshSkillData" />
                                             <v-icon @click="deleteSkill(skill.skillId)">mdi-delete</v-icon>
                                         </v-row>
                                     </v-card-title>
@@ -178,22 +178,21 @@
                     <v-card-title>
                         <v-row>
                             <h2>Projects</h2>
-                            <v-spacer/>
+                            <v-spacer />
                             <add-project :userId="userId" :projectList="currentProjects" mode="add"
-                            @refresh-data="refreshProjectData"/>
+                                @refresh-data="refreshProjectData" />
                         </v-row>
                     </v-card-title>
-                        
+
                     <v-card color="transparent" class="mb-3">
                         <v-row>
                             <v-col v-for="project in currentProjects" cols="6">
                                 <v-card class="mb-2">
                                     <v-card-title>
                                         <v-row>
-                                            <v-spacer/>
-                                            <add-project :userId="userId" :projectList="currentProjects"
-                                                mode="edit" :projectToEdit="project"
-                                                @refresh-data="refreshProjectData" />
+                                            <v-spacer />
+                                            <add-project :userId="userId" :projectList="currentProjects" mode="edit"
+                                                :projectToEdit="project" @refresh-data="refreshProjectData" />
                                             <v-icon @click="deleteProject(project.projectId)">mdi-delete</v-icon>
                                         </v-row>
                                     </v-card-title>
@@ -210,6 +209,7 @@
                     </v-card>
                 </v-card>
             </v-form>
+            <v-btn @click="saveUser">Save</v-btn>
         </v-col>
     </v-container>
 </template>
