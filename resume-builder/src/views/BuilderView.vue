@@ -147,9 +147,8 @@
                                     <v-card-text>
                                         <p>{{ experience.jobRole }}</p>
                                         <p>{{ experience.city }}, {{ experience.state }}</p>
-                                        <p>{{ experience.startDate }} - {{ experience.endDate }}</p>
-                                        <p v-for="accomplishment in experience.accomplishments" :key="accomplishment">{{
-                                            accomplishment }}</p>
+                                        <p>{{ experience.startDate }} - {{ experience.endDate }}</p>                                        
+                                        <p>{{ experience.accomplishment }}</p>
                                     </v-card-text>
                                 </v-card>
                             </v-col>
@@ -507,9 +506,7 @@ let saveResume = () => {
     resumeServices.update(resumeId, resumeData.value)
         .then((response) => {
             console.log("Saved Resume!");
-            console.log(response);
-            let newResumeId = response.data.resumeId
-            router.push("/build/saved");
+            router.push("/build/saved/" + resumeId);
         })
         .catch((error) => {
             console.log(error);
@@ -519,8 +516,6 @@ let saveResume = () => {
 let selectedExperience = ref(null);
 let selectedExperienceId = ref(null);
 
-let selectedEducationId = ref(null);
-let selectedEducation = ref(null);
 
 let selectedSkill = ref(null);
 let selectedSkillId = ref(null);

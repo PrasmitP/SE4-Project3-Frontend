@@ -28,7 +28,7 @@
             <v-text-field label="End Date *" type="month" required v-model="experience.endDate"></v-text-field>
           </v-col>
         </v-row>
-            <v-textarea label="Accomplishment "
+            <v-textarea label="Accomplishment " v-model="experience.accomplishment"
             placeholder="Accomplished {X} as measured by {Y}, by doing {Z} | Action + Project/Problem + Results = Accomplishment"></v-textarea>
   
         <!-- Save Button -->
@@ -80,6 +80,7 @@ let experience = ref({
     state: '',
     startDate: '',
     endDate: '',
+    accomplishment: '',
     userId: props.userId,
 });
 
@@ -95,6 +96,7 @@ const openDialog = () => {
     jobRole: '',
     city: '',
     state: '',
+    accomplishment: '',
     startDate: '',
     endDate: '',
     userId: props.userId,
