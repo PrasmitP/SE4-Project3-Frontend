@@ -103,7 +103,7 @@
                                         </v-row>
                                     </v-card-title>
                                     <v-card-text>
-                                        <p>{{ education.degree || education.bachalorName }}</p>
+                                        <p>{{education.bachalorName }}</p>
                                         <p>{{ education.city }}, {{ education.state }}</p>
                                         <p>{{ education.startDate }} - {{ education.endDate }}</p>
                                         <p>GPA: {{ education.gpa }}</p>
@@ -496,7 +496,7 @@ let createResume = () => {
                 .catch((error) => {
                     console.error("Error adding educations to resume:", error);
                 });
-            router.push("/build/saved");
+            router.push("/build/saved/" + newResumeId);
         })
         .catch((error) => {
             console.log(error);
