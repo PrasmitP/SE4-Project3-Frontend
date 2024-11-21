@@ -78,12 +78,16 @@
                     <v-card color="transparent" class="mb-3">
                         <v-row>
                             <v-col v-for="education in currentEducations" cols="6">
-                                <v-card class="mb-2">
+                                    <v-card
+                                    class="mb-2"
+                                    :class="{ 'selected-card': selectedEducationId === education.educationId }"
+                                    @click="educationDialog(education)">   
                                     <v-btn @click="editEducation">Edit</v-btn>
                                     <v-btn @click="deleteEducation(education.educationId)">Delete</v-btn>
                                     <v-btn v-if="selectedEducations.includes(education.educationId)"
                                         @click="educationSelection(education.educationId)">Selected</v-btn>
                                     <v-btn v-else @click="educationSelection(education.educationId)">Select</v-btn>
+
                                     <v-card-title>
                                         <h3>{{ education.institutionName }}</h3>
                                     </v-card-title>
@@ -96,7 +100,30 @@
                                 </v-card>
                             </v-col>
                         </v-row>
-                        <add-education :userId="userId" :educationList="currentEducations" />
+
+                        <add-education 
+                            :userId="userId" 
+                            :educationList="currentEducations" 
+                            mode="add" 
+                            @refresh-data="refreshEducationData"
+                        />
+                        <add-education
+                            v-if="selectedEducationId"
+                            ref="editEducationRef"
+                            :userId="userId"
+                            :educationList="currentEducations"
+                            mode="edit"
+                            :educationToEdit="selectedEducation"
+                            @refresh-data="refreshEducationData"
+                        />
+                        <v-btn
+                            v-if="selectedEducationId"
+                            class="mt-0"
+                            color="red"
+                            @click="deleteSelectedEducation"
+                        >
+                            Delete Education
+                        </v-btn>
                     </v-card>
                 </v-card>
 
@@ -173,7 +200,7 @@
                 <!-- Template 4: Skills Section (Computer Skills only) -->
                 <v-card color="primary" v-if="selectedTemplate === 4" class="mb-4">
                     <v-card-title>
-                        <h2>Skills</h2>
+                        <h2>Computer Skills</h2>
                     </v-card-title>
                     <v-row>
                         <v-col v-for="skill in currentSkills" :key="skill.skill" cols="2">
@@ -193,10 +220,22 @@
                         <h2>Projects</h2>
                     </v-card-title>
                     <v-row>
-                        <!-- Add Project fields here -->
-                    </v-row>
-                    <add-project />
-                </v-card>
+                        <v-col v-for="project in currentProjects" cols="2">
+                            <v-btn @click="editProject">Edit</v-btn>
+                                <v-btn @click="deleteProject(project.projectId)">Delete</v-btn>
+                                <v-card class="mb-2">
+                                    <v-card-title>
+                                        <h3>{{ project.projectName }}</h3>
+                                    </v-card-title>
+                                    <v-card-text>
+                                        <p>{{ project.startDate }}</p>
+                                        <p>{{ project.endDate }}</p>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                        <add-project :userId="userId" :projectList="currentProject" />
+                    </v-card>
 
                 <!-- Template 1: Accounting Hours Section -->
                 <v-card color="primary" v-if="selectedTemplate === 1" class="mb-4">
@@ -223,6 +262,7 @@ import resumeServices from '@/services/resumeServices';
 import educationServices from '@/services/educationServices';
 import experienceServices from '@/services/experienceServices';
 import skillServices from '@/services/skillServices';
+import projectServices from '@/services/projectServices';
 import { useRouter } from 'vue-router';
 
 // creating important variables for the page
@@ -341,6 +381,7 @@ let currentSkills = ref([])
 let selectedSkills = ref([]);
 getSelectedSkills(resumeId);
 getAllSkills(userId);
+let currentProjects = ref([])
 
 // functions that send requests to backend
 let router = useRouter();
@@ -358,16 +399,51 @@ let saveResume = () => {
         })
 }
 
-let deleteEducation = (educationId) => {
-    educationServices.delete(educationId)
-        .then((response) => {
-            console.log(response);
-            currentEducations.value = currentEducations.value.filter(education => education.educationId !== educationId)
-        })
-        .catch((error) => {
-            console.log(error);
-        })
-}
+
+let selectedEducationId = ref(null);
+let selectedEducation = ref(null);
+const editEducationRef = ref(null);
+
+let educationDialog = (education) => {
+
+  if (selectedEducationId.value === education.educationId) {
+    selectedEducationId.value = null;
+    selectedEducation.value = null;
+  } else {
+    selectedEducationId.value = education.educationId;
+    selectedEducation.value = education;
+    editEducationRef.value.openDialog();
+  }
+};
+
+let deleteSelectedEducation = () => {
+  if (selectedEducationId.value) {
+    educationServices.delete(selectedEducationId.value)
+      .then((response) => {
+        console.log("Education deleted:", response);
+        refreshEducationData();
+        selectedEducationId.value = null;
+        selectedEducation.value = null;
+      })
+      .catch((error) => {
+        console.error("Error deleting education:", error);
+      });
+  } else {
+    console.warn("No education selected for deletion.");
+  }
+};
+
+let refreshEducationData = () => {
+  educationServices.getAllForUser(userId)
+    .then((res) => {
+      currentEducations.value = res.data;
+      console.log("Education data refreshed:", currentEducations.value);
+    })
+    .catch((err) => {
+      console.error("Error refreshing education data:", err);
+    });
+};
+
 let deleteExperience = (experienceId) => {
     experienceServices.delete(experienceId)
         .then((response) => {
@@ -388,6 +464,17 @@ let deleteSkill = (skillId) => {
             console.log(error);
         })
 }
+let deleteProject = (projectId) => {
+    projectServices.delete(projectId)
+        .then((response) => {
+            console.log(response);
+            currentProjects.value = currentProjects.value.filter(project => project.projectId !== projectId)
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+}
+
 
 // getting user's data from the backend
 
@@ -459,6 +546,14 @@ function getSelectedSkills(resumeId) {
         console.log("Here is the updated list with SkillIds:" + selectedSkills.value);
     });
 }
+});
+projectServices.getAllForUser(userId).then((res) => {
+    res.data.forEach((item) => {
+        let project = item;
+        console.log(item)
+        currentProjects.value.push(project);
+    });
+});
 
 
 </script>
@@ -495,5 +590,12 @@ v-col {
 
 .v-btn {
     margin-top: 20px;
+}
+
+.selected-card {
+    background-color: #03203f;
+    color: white;
+    border: 2px solid #1565c0;
+    cursor: pointer;
 }
 </style>
