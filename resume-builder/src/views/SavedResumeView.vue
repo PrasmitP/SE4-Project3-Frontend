@@ -2,7 +2,12 @@
     <v-container>
         <h1>Your resume has been saved</h1>
         <div class="resumePreview">
-            <Template1 :resumeData="resumeData" />
+            <!-- Something to switch between these templates -->
+            <!-- <Template1 :resumeData="resumeData" /> -->
+            <!-- <Template2 :resumeData="resumeData" /> -->
+            <!-- <Template3 :resumeData="resumeData" /> -->
+            <Template4 :resumeData="resumeData" />
+            
         </div>
         <h2>Ai Suggestions</h2>
         <p>ai suggestion text should go here</p>
@@ -14,6 +19,9 @@
 //import { ref, onMounted } from "vue";
 import { generatePDF } from '../services/PDFDownloader';
 import Template1 from '../templates/html/Template1vue.vue';
+import Template2 from '@/templates/html/Template2vue.vue';
+import Template3 from '@/templates/html/Template3vue.vue';
+import Template4 from '@/templates/html/Template4vue.vue';
 
 const props = defineProps({
     resumeData: {

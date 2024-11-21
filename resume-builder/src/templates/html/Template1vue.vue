@@ -5,9 +5,9 @@
         
         <!-- Contact Information -->
         <p class="center-align">
-            {{ resumeData.city || "City" }}, {{ resumeData.state || "State" }} | 
+            {{ resumeData.city || "Oklahoma City" }}, {{ resumeData.state || "Oklahoma" }} | 
             {{ resumeData.phoneNumber || "(555) 555-5555" }} | 
-            {{ resumeData.email || "email@example.com" }} | 
+            {{ resumeData.email || "ike.theagle@oc.edu " }} | 
             {{ resumeData.website || "LinkedIn/Website URL (optional)" }}
         </p>
 
@@ -74,6 +74,7 @@ export default {
     border: 1px solid #000;
     padding: 20px;
     max-width: 800px;
+    height: 1000px;
     margin: 0 auto;
     background-color: white;
 }

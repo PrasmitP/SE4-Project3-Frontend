@@ -1,76 +1,152 @@
-export function generateTemplate4HTML(resumeData) {
-    return `
-        <div style="font-family: Times, serif; padding: 20px; max-width: 800px; margin: auto;">
-            <h2 style="text-align: center; font-weight: bold; font-size: 24px;">
-                ${resumeData.firstName || "First Name"} ${resumeData.lastName || "Last Name"}
-            </h2>
-            <p style="text-align: center; font-size: 12px;">
-                ${resumeData.city || "City"}, ${resumeData.state || "State"} | 
-                ${resumeData.phoneNumber || "Phone Number"} | 
-                ${resumeData.email || "Email Address"} | 
-                ${resumeData.website || "LinkedIn or Website URL"}
-            </p>
+<template>
+    <div class="resume-template">
+        <!-- Full Name -->
+        <h2 class="center-align">
+            {{ resumeData.firstName || "First Name" }} {{ resumeData.lastName || "Last Name" }}
+        </h2>
+        <p class="center-align">
+            {{ resumeData.city || "City" }}, {{ resumeData.state || "State" }} |
+            {{ resumeData.phoneNumber || "Phone Number" }} |
+            {{ resumeData.email || "Email Address" }} |
+            {{ resumeData.website || "LinkedIn or Website URL" }}
+        </p>
 
-            <h3 style="font-size: 16px; font-weight: bold; margin-top: 20px;">OBJECTIVE</h3>
-            <p style="font-size: 12px;">
-                ${resumeData.objective || "Recent graduate with a degree in marketing seeking an entry-level position in digital marketing. Experienced in creating social media campaigns and analyzing data to drive engagement and sales."}
+        <!-- Objective -->
+        <section>
+            <h3>OBJECTIVE</h3>
+            <p>
+                {{ resumeData.objective ||
+                    "Recent graduate with a degree in marketing seeking an entry-level position in digital marketing. Experienced in creating social media campaigns and analyzing data to drive engagement and sales." }}
             </p>
+        </section>
 
-            <h3 style="font-size: 16px; font-weight: bold; margin-top: 20px;">EDUCATION</h3>
-            <p style="font-size: 12px; font-weight: bold;">
-                ${resumeData.universityName || "Oklahoma Christian University"}, ${resumeData.universityCity || "City"}, ${resumeData.universityState || "State"}
+        <!-- Education -->
+        <section>
+            <h3>EDUCATION</h3>
+            <p>
+                {{ resumeData.universityName || "Oklahoma Christian University" }},
+                {{ resumeData.universityCity || "City" }}, {{ resumeData.universityState || "State" }}
+                <span class="float-right">{{ resumeData.startDate || "Start Month, Year" }} - {{ resumeData.endDate || "Projected Month, Year" }}</span>
             </p>
-            <p style="font-size: 12px;">
-                ${resumeData.startDate || "Start Month, Year"} - ${resumeData.endDate || "Projected Month, Year"}<br>
-                Bachelor of ${resumeData.degree || "Arts/Science in XX"}<br>
-                Minor(s): ${resumeData.minor || "(if applicable)"}<br>
-                Major GPR: ${resumeData.majorGPR || "#.##"}; Cumulative GPR: ${resumeData.cumulativeGPR || "#.##"}<br>
-                Coursework: ${resumeData.coursework || "(optional, only list if specifically requested)"}
+            <p>
+                Bachelor of {{ resumeData.degree || "Arts/Science in XX" }}
             </p>
+            <p>
+                Minor(s) in .... {{ resumeData.minor || "(if applicable)" }}<br />
+                Major GPR: {{ resumeData.majorGPR || "#.##" }}; Cumulative GPR: {{ resumeData.cumulativeGPR || "#.##" }}<br />
+                Coursework: {{ resumeData.coursework || "(optional, only list if specifically requested)" }}
+            </p>
+        </section>
 
-            <h3 style="font-size: 16px; font-weight: bold; margin-top: 20px;">LEADERSHIP (or WORK EXPERIENCE, ACTIVITIES, VOLUNTEER WORK)</h3>
-            <div style="margin-left: 20px;">
-                <p style="font-size: 12px; font-weight: bold;">
-                    ${resumeData.leadershipOrg || "Organization Name"}<br>
-                    ${resumeData.positionTitle || "Position Title"}
+        <!-- Leadership -->
+        <section>
+            <h3>LEADERSHIP (or WORK EXPERIENCE, ACTIVITIES, VOLUNTEER WORK)</h3>
+            <div>
+                <p>
+                    {{ resumeData.leadershipOrg || "Organization Name" }}
+                    <span class="float-right">{{ resumeData.startDateLeadership || "Month Year" }} - {{ resumeData.endDateLeadership || "Month Year" }}</span>
                 </p>
-                <p style="font-size: 12px;">
-                    ${resumeData.startDateLeadership || "Month Year"} - ${resumeData.endDateLeadership || "Month Year"}
+                <p class="italic">
+                    {{ resumeData.positionTitle || "Position Title" }}
                 </p>
-                <ul style="font-size: 12px;">
-                    <li>${resumeData.leadershipBullet1 || "Action Verb, followed by description of most relevant or important duties and accomplishments"}</li>
-                    <li>${resumeData.leadershipBullet2 || "Action Verb, followed by description of most relevant or important duties and accomplishments"}</li>
+                <ul>
+                    <li>{{ resumeData.leadershipBullet1 || "Action Verb, followed by description of most relevant or important duties and accomplishments" }}</li>
+                    <li>{{ resumeData.leadershipBullet2 || "Action Verb, followed by description of most relevant or important duties and accomplishments" }}</li>
                 </ul>
             </div>
+        </section>
 
-            <h3 style="font-size: 16px; font-weight: bold; margin-top: 20px;">WORK EXPERIENCE (or LEADERSHIP, ACTIVITIES, VOLUNTEER WORK)</h3>
-            <div style="margin-left: 20px;">
-                <p style="font-size: 12px; font-weight: bold;">
-                    ${resumeData.companyName || "Company Name"}, ${resumeData.companyCity || "City"}, ${resumeData.companyState || "State"}
+        <!-- Work Experience -->
+        <section>
+            <h3>WORK EXPERIENCE (or LEADERSHIP, ACTIVITIES, VOLUNTEER WORK)</h3>
+            <div>
+                <p>
+                    {{ resumeData.companyName || "Company Name" }},
+                    {{ resumeData.companyCity || "City" }}, {{ resumeData.companyState || "State" }}
+                    <span class="float-right">{{ resumeData.companyStart || "Month Year" }} - {{ resumeData.companyEnd || "Month Year" }}</span>
                 </p>
-                <p style="font-size: 12px;">
-                    ${resumeData.companyStart || "Month Year"} - ${resumeData.companyEnd || "Month Year"}<br>
-                    ${resumeData.jobTitle || "Job Title"}
+                <p class="bold_and_italics">
+                    {{ resumeData.jobTitle || "Job Title" }}
                 </p>
-                <ul style="font-size: 12px;">
-                    <li>${resumeData.workBullet1 || "Action Verb, followed by description of most relevant or important duties and accomplishments"}</li>
-                    <li>${resumeData.workBullet2 || "Action Verb, followed by description of most relevant or important duties and accomplishments"}</li>
+                <ul>
+                    <li>{{ resumeData.workBullet1 || "Action Verb, followed by description of most relevant or important duties and accomplishments" }}</li>
+                    <li>{{ resumeData.workBullet2 || "Action Verb, followed by description of most relevant or important duties and accomplishments" }}</li>
                 </ul>
             </div>
+        </section>
 
-            <h3 style="font-size: 16px; font-weight: bold; margin-top: 20px;">HONORS (and/or AWARDS)</h3>
-            <p style="font-size: 12px; font-weight: bold;">
-                ${resumeData.honorTitle || "Honor/Award/Organization"}<br>
-                ${resumeData.honorDate || "Month Year - Month Year"}
+        <!-- Honors and Awards -->
+        <section>
+            <h3>HONORS (and/or AWARDS)</h3>
+            <p>
+                {{ resumeData.honorTitle || "Honor/Award/Organization" }}
+                <span class="float-right">{{ resumeData.honorDate || "Month Year - Month Year" }}</span>
             </p>
-            <p style="font-size: 12px;">
-                ${resumeData.honorDescription || "Action Verb, followed by criteria for selection or explanation of involvement"}
+            <p>
+                {{ resumeData.honorDescription || "Action Verb, followed by criteria for selection or explanation of involvement" }}
             </p>
+        </section>
 
-            <h3 style="font-size: 16px; font-weight: bold; margin-top: 20px;">SKILLS</h3>
-            <p style="font-size: 12px;">
-                ${resumeData.skills || "List language skills and declare fluency (if applicable) | List relevant computer skills"}
+        <!-- Skills -->
+        <section>
+            <h3>SKILLS</h3>
+            <p>
+                {{ resumeData.skills ||
+                    "List language skills and declare fluency (if applicable) | List relevant computer skills" }}
             </p>
-        </div>
-    `;
+        </section>
+    </div>
+</template>
+
+<script>
+export default {
+    props: {
+        resumeData: {
+            type: Object,
+            default: () => ({})
+        }
+    }
+};
+</script>
+
+<style scoped>
+.resume-template {
+    font-family: Times, serif;
+    max-width: 800px;
+    padding: 20px;
+    margin: auto;
+    background: white;
+    color: black;
 }
+
+.center-align {
+    text-align: center;
+}
+
+h3 {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.float-right {
+    float: right;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.bold_and_italics {
+    font-weight: bold;
+    font-style: italic;
+}
+
+ul {
+    margin: 10px 0;
+    padding-left: 40px;
+}
+</style>

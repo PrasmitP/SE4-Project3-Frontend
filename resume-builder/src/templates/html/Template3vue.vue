@@ -1,77 +1,133 @@
-export function generateTemplate3HTML(resumeData) {
-    return `
-        <div style="font-family: Times, serif; width: 800px; padding: 20px; background: white; border: 1px solid #ddd;">
-            <h1 style="font-size: 20px; font-weight: bold; text-align: center;">
-                ${resumeData.firstName || "First Name"} ${resumeData.lastName || "Last Name"}
-            </h1>
-            <p style="font-size: 10px; text-align: center; margin-top: 5px;">
-                ${resumeData.city || "City"}, ${resumeData.state || "State"} | 
-                ${resumeData.phoneNumber || "(555) 555-5555"} | 
-                ${resumeData.email || "email@example.com"} | 
-                ${resumeData.website || "LinkedIn Url / Website Url (optional)"}
-            </p>
-            <hr style="margin-top: 5px; border-top: 1px solid #000;"/>
+<template>
+    <div class="resume-template">
+        <!-- Full Name -->
+        <h1 class="center-align">
+            {{ resumeData.firstName || "First Name" }} {{ resumeData.lastName || "Last Name" }}
+        </h1>
+        <p class="center-align">
+            {{ resumeData.city || "Edmond" }}, {{ resumeData.state || "OK" }} |
+            {{ resumeData.phoneNumber || "405.453.3245" }} |
+            {{ resumeData.email || "ike.eagle@eagles.oc.edu" }} |
+            {{ resumeData.website || "LinkedIn Url / Website Url (optional)" }}
+        </p>
+        <hr />
 
-            <p style="font-size: 12px; margin-top: 10px;">
-                ${resumeData.professionalSummary ||
-                    "Analytic-focused data professional with 2+ years’ experience developing computational models and executing statistical projects to drive insights. Demonstrated ability to translate complex datasets into actionable information and support overarching research initiatives."}
-            </p>
+        <!-- Professional Summary -->
+        <p class="summary">
+            {{ resumeData.professionalSummary ||
+                "Analytic-focused data professional with 2+ years’ experience developing computational models and executing statistical projects to drive insights. Demonstrated ability to translate complex datasets into actionable information and support overarching research initiatives." }}
+        </p>
 
-            <h2 style="font-size: 14px; font-weight: bold; margin-top: 20px;">EDUCATION</h2>
-            <hr style="border-top: 1px solid #000;"/>
-            <p style="font-size: 12px; font-weight: bold; margin-top: 5px;">
-                ${resumeData.universityName || "Oklahoma Christian University"}
-                <span style="font-weight: normal;">, ${resumeData.universityCity || "City"}, ${resumeData.universityState || "State"}</span>
+        <!-- Education -->
+        <section>
+            <h3>EDUCATION</h3>
+            <hr />
+            <p>
+                <strong>{{ resumeData.universityName || "Oklahoma Christian University" }}</strong>,
+                {{ resumeData.universityCity || "City" }}, {{ resumeData.universityState || "State" }}
+                <span class="float-right">{{ resumeData.universityEnd || "Projected May, 20xx" }}</span>
             </p>
-            <p style="font-size: 12px; margin-top: 5px;">
-                ${resumeData.universityEnd || "Projected May, 20xx"}
-                <span style="float: right;">GPA: ${resumeData.gpa || "3.xx/4.x"}</span>
+            <p>
+                {{ resumeData.degree || "Bachelor of Science in Computer Engineering" }}
+                <span class="float-right">GPA: {{ resumeData.gpa || "3.xx/4.x" }}</span>
             </p>
-            <p style="font-size: 12px; margin-top: 5px;">
-                ${resumeData.degree || "Bachelor of Science in Computer Engineering"}
-            </p>
+        </section>
 
-            <h2 style="font-size: 14px; font-weight: bold; margin-top: 20px;">EXPERIENCE</h2>
-            <hr style="border-top: 1px solid #000;"/>
-            <p style="font-size: 12px; font-weight: bold; margin-top: 5px;">
-                ${resumeData.companyName || "Oklahoma Christian University"}
-                <span style="font-weight: normal;">, ${resumeData.companyCity || "City"}, ${resumeData.companyState || "State"}</span>
-            </p>
-            <p style="font-size: 12px; margin-top: 5px;">
-                ${resumeData.companyStart || "August, 20xx"} – ${resumeData.companyEnd || "Present"}
-                <span style="float: right;">${resumeData.jobTitle || "Job Title"}</span>
-            </p>
+        <!-- Experience -->
+        <section>
+            <h3>EXPERIENCE</h3>
+            <hr />
+            <div class="experience-section">
+                <p>
+                    <strong>{{ resumeData.companyName || "Oklahoma Christian University" }}</strong>,
+                    {{ resumeData.companyCity || "City" }}, {{ resumeData.companyState || "State" }}
+                    <span class="float-right">{{ resumeData.companyStart || "August, 20xx" }} – {{ resumeData.companyEnd || "Present" }}</span>
+                </p>
+                <p>{{ resumeData.jobTitle || "Job Title" }}</p>
+                <ul>
+                    <li>{{ resumeData.workBullet1 || "Collaborated with cross-functional team to define and prioritize data science projects." }}</li>
+                    <li>{{ resumeData.workBullet2 || "Conducted exploratory data analysis on large datasets using Python and SQL." }}</li>
+                    <li>{{ resumeData.workBullet3 || "Developed statistical models to evaluate the effectiveness of algorithms." }}</li>
+                    <li>{{ resumeData.workBullet4 || "Developed software tools and libraries in Python for data analysis and visualization." }}</li>
+                    <li>{{ resumeData.workBullet5 || "Presented research updates using Tableau dashboards." }}</li>
+                </ul>
+            </div>
+        </section>
 
-            <ul style="font-size: 12px; margin-top: 5px; padding-left: 20px;">
-                <li>${resumeData.workBullet1 || "Collaborated with cross-functional team of computer, electrical, and mechanical engineers to define and prioritize data science projects, driving $1.5M NIST-funded research in multimedia storage systems"}</li>
-                <li>${resumeData.workBullet2 || "Conducted exploratory data analysis (EDA) on large datasets using Python and SQL, identifying key trends and patterns to inform research focused on multimedia bit rate conversion"}</li>
-                <li>${resumeData.workBullet3 || "Conducted statistical analysis of experimental results to evaluate the effectiveness of algorithms and models"}</li>
-                <li>${resumeData.workBullet4 || "Developed software tools and libraries in Python to facilitate data analysis, visualization, and modeling"}</li>
-                <li>${resumeData.workBullet5 || "Presented weekly research updates with Tableau dashboards and made recommendations to primary investigator on study direction"}</li>
-            </ul>
+        <!-- Projects -->
+        <section>
+            <h3>PROJECTS</h3>
+            <hr />
+            <div class="project-section">
+                <p>
+                    <strong>{{ resumeData.projectInstitution || "Oklahoma Christian University" }}</strong>,
+                    {{ resumeData.projectCity || "City" }}, {{ resumeData.projectState || "State" }}
+                    <span class="float-right">{{ resumeData.projectStart || "June, 20xx" }} – {{ resumeData.projectEnd || "August, 20xx" }}</span>
+                </p>
+                <p>{{ resumeData.projectTitle || "Undergraduate Researcher for the Computer Science Lab" }}</p>
+                <ul>
+                    <li>{{ resumeData.projectBullet1 || "Used SQL to extract and manipulate data for $250K funding." }}</li>
+                    <li>{{ resumeData.projectBullet2 || "Maintained and updated ETL workflows for data integrity." }}</li>
+                    <li>{{ resumeData.projectBullet3 || "Implemented data preprocessing for advanced analyses." }}</li>
+                </ul>
+            </div>
+        </section>
 
-            <h2 style="font-size: 14px; font-weight: bold; margin-top: 20px;">PROJECTS</h2>
-            <hr style="border-top: 1px solid #000;"/>
-            <p style="font-size: 12px; font-weight: bold; margin-top: 5px;">
-                ${resumeData.projectInstitution || "Oklahoma Christian University"}
-                <span style="font-weight: normal;">, ${resumeData.projectCity || "City"}, ${resumeData.projectState || "State"}</span>
+        <!-- Skills -->
+        <section>
+            <h3>SKILLS</h3>
+            <hr />
+            <p>
+                {{ resumeData.skills ||
+                    "Simple Linear Regression | Multivariate Linear Regression | Statistical Modeling | Data Integrity | Parametric Tests | Nonparametric Tests | Sampling Methods | Natural Language Processing (NLP) Tableau | R | VBA | Excel | Python | SQL | Java" }}
             </p>
-            <p style="font-size: 12px; margin-top: 5px;">
-                ${resumeData.projectStart || "June, 20xx"} – ${resumeData.projectEnd || "August, 20xx"}
-                <span style="float: right;">${resumeData.projectTitle || "Undergraduate Researcher for the Computer Science Lab"}</span>
-            </p>
+        </section>
+    </div>
+</template>
 
-            <ul style="font-size: 12px; margin-top: 5px; padding-left: 20px;">
-                <li>${resumeData.projectBullet1 || "Used SQL to extract and manipulate data from relational databases for $250K funding"}</li>
-                <li>${resumeData.projectBullet2 || "Maintained and updated existing data pipelines and extract, transform, and load (ETL) workflows to ensure data integrity and reliability"}</li>
-                <li>${resumeData.projectBullet3 || "Implemented data cleaning and preprocessing from raw Excel data to transfer into Stata for further analyses"}</li>
-            </ul>
+<script>
+export default {
+    props: {
+        resumeData: {
+            type: Object,
+            default: () => ({}),
+        },
+    },
+};
+</script>
 
-            <h2 style="font-size: 14px; font-weight: bold; margin-top: 20px;">SKILLS</h2>
-            <hr style="border-top: 1px solid #000;"/>
-            <p style="font-size: 12px; margin-top: 5px;">
-                ${resumeData.skills || "Simple Linear Regression | Multivariate Linear Regression | Statistical Modeling | Data Integrity | Parametric Tests | Nonparametric Tests | Sampling Methods | Natural Language Processing (NLP) Tableau | R | VBA | Excel | Python | SQL | Java"}
-            </p>
-        </div>
-    `;
+<style scoped>
+.resume-template {
+    border: 1px solid #000;
+    padding: 20px;
+    max-width: 800px;
+    height: 1000px;
+    margin: 0 auto;
+    background-color: white;
+    color: black;
 }
+
+.center-align {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.float-right {
+    float: right;
+    margin-left: 10px;
+}
+
+h3 {
+    margin-top: 20px;
+}
+
+ul {
+    margin-top: 5px;
+    padding-left: 40px;
+}
+
+hr {
+    border: 0.5px solid #000;
+    margin: 10px 0;
+}
+</style>
