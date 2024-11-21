@@ -5,6 +5,7 @@ import BuilderView from "../views/BuilderView.vue";
 import LoginView from "../views/LoginView.vue";
 import SavedResumeView from "@/views/SavedResumeView.vue";
 import MyInfoView from "@/views/MyInfoView.vue";
+import AdminView from "@/views/AdminView.vue";
 
 
 const router = createRouter({
@@ -15,6 +16,10 @@ const router = createRouter({
       alias: "/home",
       name: "home",
       component: HomeView,
+    },{
+      path: "/adminView",
+      name: "adminView",
+      component: AdminView
     },
     {
       path: "/build",

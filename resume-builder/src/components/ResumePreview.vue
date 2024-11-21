@@ -7,7 +7,7 @@
                     <v-card-title>This is where the resume preview will go</v-card-title>
                     <v-card-text>Resume preview will be displayed here either as an html or image/pdf</v-card-text>
                 </v-card>
-                <v-card width="60vh" >
+                <v-card width="60vh">
                     <v-card height="50vh">
                         <v-card>
                             <v-row justify="end" no-gutters align="center">
@@ -19,21 +19,26 @@
                         </v-card>
                         <v-timeline align="start" side="end" density="comfortable" line-thickness="0"
                             style="overflow-y: auto;">
-                            <v-timeline-item v-for="comment in comments" key="comment.name">
+                            <v-timeline-item v-for="comment in comments">
                                 <template v-slot:icon>
-                                    <v-avatar color="red">
+                                    <v-avatar color="primary">
                                         <span>{{ comment.initials }}</span>
                                     </v-avatar>
                                 </template>
                                 <v-card color="white" max-width="95%" style="border-radius: 10px;">
-                                    <v-card-title>{{ comment.name }}</v-card-title>
-                                    <v-card-text>{{ comment.comment }}</v-card-text>
+                                    <v-card-title>{{ comment.author }}</v-card-title>
+                                    <v-card-text>{{ comment.text }}</v-card-text>
                                 </v-card>
                             </v-timeline-item>
-                            <div style="height: 40px;   "></div>
+                            <div style="height: 40px;"></div>
                         </v-timeline>
                     </v-card>
-                    <v-card color="indigo" height="30vh">
+                    <v-card>
+                        <v-text-field label="Comment" density="comfortable" v-model="newComment" :disabled="isAdmin ? false : true"
+                            @keyup.enter="addComment">
+                        </v-text-field>
+                    </v-card>
+                    <v-card color="indigo" height="26vh">
                         <v-card color="indigo-darken-3">
                             <v-card-title>AI Suggestion</v-card-title>
                         </v-card>
@@ -50,45 +55,64 @@
 </template>
 
 <script setup>
-let comments = [
-    {
-        name: "David North",
-        initials: "DN",
-        comment: "Good Resume!!"
-    },
-    {
-        name: "Jane Doe",
-        initials: "JD",
-        comment: "Change this!!"
-    },
-    {
-        name: "John Smith",
-        initials: "JS",
-        comment: "Change that!!!"
-    },
-    {
-        name: "Alice Wonderland",
-        initials: "AW",
-        comment: "Your resume has a few problems: 1. You have a typo in the second paragraph. 2. The font size is too small. 3. The layout is not very appealing. 4. You should add more bullet points to your work experience."
-    },
-    {
-        name: "Bob Builder",
-        initials: "BB",
-        comment: "Your resume is great! I love the layout and the font. The only thing I would change is the color scheme. I think it would look better with a different color."
-    },
-    {
-        name: "Charlie Chaplin",
-        initials: "CC",
-        comment: "Your resume is perfect! I wouldn't change a thing. Great job!"
-    }
+import { ref } from 'vue'
+import commentServices from '../services/commentServices.js'
+import Utils from '@/config/utils.js';
 
-];
+let props = defineProps({
+    resumeId: {
+        type: String,
+        required: true
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
+    }
+})
+
+let isAdmin = props.isAdmin
+console.log(isAdmin)
+let resumeId = props.resumeId
+let comments = ref([])
+getResumeComments(resumeId)
+function getResumeComments(resumeId) {
+    console.log("Getting comments for resume:" + resumeId)
+    commentServices.getAllForResume(resumeId).then((res) => {
+        res.data.forEach((comment) => {
+            comment.initials = comment.author.split(" ").map((n) => n[0]).join("")
+            comments.value.push(comment)
+        })
+    });
+}
+
+let user = Utils.getStore("user")
+let userName = user.fName + " " + user.lName
+let userInitials = user.fName[0] + user.lName[0]
+let newComment = ref("")
+function addComment() {
+    if (newComment.value == "") {
+        return
+    }
+    let comment = {
+        author: userName,
+        text: newComment.value,
+        resumeResumeId: resumeId,
+    }
+    commentServices.create(comment, resumeId).then((res) => {
+        newComment.value = ""
+        comment.initials = userInitials,
+            comments.value.push(comment)
+    });
+
+}
+
 </script>
 
 <style scoped>
 .v-card {
     border-radius: 0%;
 }
+
 .background {
     background-color: rgba(0, 0, 0, 0.5);
     height: 100vh;
@@ -104,5 +128,4 @@ let comments = [
     position: fixed;
     margin-top: 35px;
 }
-
 </style>
