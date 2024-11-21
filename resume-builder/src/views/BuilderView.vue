@@ -62,25 +62,40 @@
                     <v-card-title>
                         <h3>Professional Summary</h3>
                     </v-card-title>
-                    <v-textarea v-model="resumeData.summary" :label="selectedTemplate == 3 ? 'Professional Summary *' : 'Career Objective *'" required class="mb-3"></v-textarea>
+                    <v-textarea v-model="resumeData.summary"
+                        :label="selectedTemplate == 3 ? 'Professional Summary *' : 'Career Objective *'" required
+                        class="mb-3"></v-textarea>
                 </v-card>
 
 
                 <!-- Education Section -->
-                <v-card color="primary" class="mb-4">
+                <v-card color="secondary" class="mb-4">
 
                     <v-card-title>
-                        <h2>Education</h2>
+                        <v-row>
+                            <h2>Education</h2>
+                            <v-spacer />
+                            <add-education :userId="userId" :educationList="currentEducations" mode="add"
+                                @refresh-data="refreshEducationData" />
+                        </v-row>
                     </v-card-title>
 
                     <v-card color="transparent" class="mb-3">
                         <v-row>
                             <v-col v-for="education in currentEducations" cols="6">
-                                <v-card class="mb-2">
-                                    <v-btn @click="editEducation">Edit</v-btn>
-                                    <v-btn @click="deleteEducation(education.educationId)">Delete</v-btn>
+                                <v-card
+                                    :color="selectedEducations.includes(education.educationId) ? 'selected' : 'unselected'"
+                                    :elevation="selectedEducations.includes(education.educationId) ? 10 : 2"
+                                    @click="educationSelection(education.educationId)" class=" mb-2">
                                     <v-card-title>
-                                        <h3>{{ education.institutionName }}</h3>
+                                        <v-row>
+                                            <h3>{{ education.institutionName }}</h3>
+                                            <v-spacer />
+                                            <add-education :userId="userId" :educationList="currentEducations"
+                                                mode="edit" :educationToEdit="education"
+                                                @refresh-data="refreshEducationData" />
+                                            <v-icon @click="deleteEducation(education.educationId)">mdi-delete</v-icon>
+                                        </v-row>
                                     </v-card-title>
                                     <v-card-text>
                                         <p>{{ education.degree || education.bachalorName }}</p>
@@ -91,7 +106,6 @@
                                 </v-card>
                             </v-col>
                         </v-row>
-                        <add-education :userId="userId" :educationList="currentEducations" />
                     </v-card>
                 </v-card>
 
@@ -106,6 +120,9 @@
                             <v-col v-for="experience in currentExperiences" cols="6">
                                 <v-btn @click="editExperience">Edit</v-btn>
                                 <v-btn @click="deleteExperience(experience.experienceId)">Delete</v-btn>
+                                <v-btn v-if="selectedExperiences.includes(experience.experienceId)"
+                                    @click="experienceSelection(experience.experienceId)">Selected</v-btn>
+                                <v-btn v-else @click="experienceSelection(experience.experienceId)">Select</v-btn>
                                 <v-card class="mb-2">
                                     <v-card-title>
                                         <h3>{{ experience.companyName }}</h3>
@@ -136,6 +153,9 @@
                             <v-card class="mb-2">
                                 <v-btn @click="editSkill">Edit</v-btn>
                                 <v-btn @click="deleteSkill(skill.skillId)">Delete</v-btn>
+                                <v-btn v-if="selectedSkills.includes(skill.skillId)"
+                                    @click="skillSelection(skill.skillId)">Selected</v-btn>
+                                <v-btn v-else @click="skillSelection(skill.skillId)">Select</v-btn>
                                 <v-card-text v-if="skill.type == 'Language'">
                                     <h3>{{ skill.title }} - {{ skill.proficiency }}</h3>
                                 </v-card-text>
@@ -162,7 +182,7 @@
                 <!-- Template 4: Skills Section (Computer Skills only) -->
                 <v-card color="primary" v-if="selectedTemplate === 4" class="mb-4">
                     <v-card-title>
-                        <h2>Skills</h2>
+                        <h2>Computer Skills</h2>
                     </v-card-title>
                     <v-row>
                         <v-col v-for="skill in currentSkills" :key="skill.skill" cols="2">
@@ -182,9 +202,21 @@
                         <h2>Projects</h2>
                     </v-card-title>
                     <v-row>
-                        <!-- Add Project fields here -->
+                        <v-col v-for="project in currentProjects" cols="2">
+                            <v-btn @click="editProject">Edit</v-btn>
+                            <v-btn @click="deleteProject(project.projectId)">Delete</v-btn>
+                            <v-card class="mb-2">
+                                <v-card-title>
+                                    <h3>{{ project.projectName }}</h3>
+                                </v-card-title>
+                                <v-card-text>
+                                    <p>{{ project.startDate }}</p>
+                                    <p>{{ project.endDate }}</p>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
                     </v-row>
-                    <add-project />
+                    <add-project :userId="userId" :projectList="currentProject" />
                 </v-card>
 
                 <!-- Template 1: Accounting Hours Section -->
@@ -199,7 +231,7 @@
                 </v-card>
             </v-form>
         </v-col>
-        <v-btn class="mt-4" @click="saveResume">Generate Resume</v-btn>
+        <v-btn class="mt-4" @click="saveResume">Save and Generate Resume</v-btn>
     </v-container>
 </template>
 
@@ -212,19 +244,95 @@ import resumeServices from '@/services/resumeServices';
 import educationServices from '@/services/educationServices';
 import experienceServices from '@/services/experienceServices';
 import skillServices from '@/services/skillServices';
+import projectServices from '@/services/projectServices';
 import { useRouter } from 'vue-router';
 
 // creating important variables for the page
+
+let props = defineProps({
+    id: {
+        type: Number,
+    }
+})
+
+let resumeId = props.id;
+console.log("resume id:" + resumeId)
 
 let selectedTemplate = ref(1);
 let user = Utils.getStore("user");
 let userId = user.userId;
 let resumeData = ref({
     title: "newResume",
-    template: 1,
+    template: "",
     summary: "",
     userId: user.userId,
 })
+
+// start of functions for data selection
+
+const educationSelection = (educationId) => {
+    const updateSelection = (action) => {
+        let body = action === 'add' ? { addResumeId: resumeId } : { removeResumeId: resumeId };
+        educationServices.updateRelation(educationId, body).then(() => {
+            if (action === 'add') {
+                selectedEducations.value.push(educationId);
+                console.log(`Added education to resume: ${educationId}`);
+            } else {
+                selectedEducations.value = selectedEducations.value.filter(edu => edu !== educationId);
+                console.log(`Removed education from resume: ${educationId}`);
+            }
+            console.log(`Updated list: ${selectedEducations.value}`);
+        });
+    };
+
+    if (selectedEducations.value.includes(educationId)) {
+        if (resumeId) updateSelection('remove');
+    } else {
+        if (resumeId) updateSelection('add');
+    }
+};
+const experienceSelection = (experienceId) => {
+    const updateSelection = (action) => {
+        let body = action === 'add' ? { addResumeId: resumeId } : { removeResumeId: resumeId };
+        experienceServices.updateRelation(experienceId, body).then(() => {
+            if (action === 'add') {
+                selectedExperiences.value.push(experienceId);
+                console.log(`Added experience to resume. ExperienceId: ${experienceId}`);
+            } else {
+                selectedExperiences.value = selectedExperiences.value.filter(exp => exp !== experienceId);
+                console.log(`Removed experience from resume. ExperienceId: ${experienceId}`);
+            }
+            console.log(`Updated list: ${selectedExperiences.value}`);
+        });
+    };
+
+    if (selectedExperiences.value.includes(experienceId)) {
+        if (resumeId) updateSelection('remove');
+    } else {
+        if (resumeId) updateSelection('add');
+    }
+};
+const skillSelection = (skillId) => {
+    const updateSelection = (action) => {
+        let body = action === 'add' ? { addResumeId: resumeId } : { removeResumeId: resumeId };
+        skillServices.updateRelation(skillId, body).then(() => {
+            if (action === 'add') {
+                selectedSkills.value.push(skillId);
+                console.log(`Added skill to resume. skillId: ${skillId}`);
+            } else {
+                selectedSkills.value = selectedSkills.value.filter(skl => skl !== skillId);
+                console.log(`Removed skill from resume. skillId: ${skillId}`);
+            }
+            console.log(`Updated list: ${selectedSkills.value}`);
+        });
+    };
+
+    if (selectedSkills.value.includes(skillId)) {
+        if (resumeId) updateSelection('remove');
+    } else {
+        if (resumeId) updateSelection('add');
+    }
+};
 
 // start of constant for data editing
 
@@ -239,14 +347,30 @@ const states = [
 
 // start of lists of data for resume
 
+getResumeData(resumeId);
+
 let currentEducations = ref([])
+let selectedEducations = ref([]);
+getSelectedEducation(resumeId);
+getAllEducation(userId);
+
 let currentExperiences = ref([])
+let selectedExperiences = ref([]);
+getSelectedExperiences(resumeId);
+getAllExperiences(userId);
+
 let currentSkills = ref([])
+let selectedSkills = ref([]);
+getSelectedSkills(resumeId);
+getAllSkills(userId);
+let currentProjects = ref([])
 
 // functions that send requests to backend
 let router = useRouter();
 
 let saveResume = () => {
+    resumeData.value.template = selectedTemplate.value;
+    console.log(selectedTemplate.value);
     resumeServices.create(resumeData.value)
         .then((response) => {
             console.log(response);
@@ -257,16 +381,35 @@ let saveResume = () => {
         })
 }
 
+
+let selectedEducationId = ref(null);
+let selectedEducation = ref(null);
+const editEducationRef = ref(null);
+
 let deleteEducation = (educationId) => {
     educationServices.delete(educationId)
         .then((response) => {
-            console.log(response);
-            currentEducations.value = currentEducations.value.filter(education => education.educationId !== educationId)
+            console.log("Education deleted:", response);
+            refreshEducationData();
+            selectedEducationId.value = null;
+            selectedEducation.value = null;
         })
         .catch((error) => {
-            console.log(error);
+            console.error("Error deleting education:", error);
+        });
+};
+
+let refreshEducationData = () => {
+    educationServices.getAllForUser(userId)
+        .then((res) => {
+            currentEducations.value = res.data;
+            console.log("Education data refreshed:", currentEducations.value);
         })
-}
+        .catch((err) => {
+            console.error("Error refreshing education data:", err);
+        });
+};
+
 let deleteExperience = (experienceId) => {
     experienceServices.delete(experienceId)
         .then((response) => {
@@ -287,28 +430,93 @@ let deleteSkill = (skillId) => {
             console.log(error);
         })
 }
+let deleteProject = (projectId) => {
+    projectServices.delete(projectId)
+        .then((response) => {
+            console.log(response);
+            currentProjects.value = currentProjects.value.filter(project => project.projectId !== projectId)
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+}
+
 
 // getting user's data from the backend
 
-educationServices.getAllForUser(userId).then((res) => {
-    res.data.forEach((item) => {
-        let education = item;
-        console.log(item)
-        currentEducations.value.push(education);
+function getResumeData(resumeId) {
+    resumeServices.get(resumeId).then((res) => {
+        let resume = res.data;
+        console.log(resume)
+        resumeData.value = resume;
+        selectedTemplate.value = resume.template;
     });
-});
-experienceServices.getAllForUser(userId).then((res) => {
-    res.data.forEach((item) => {
-        let experience = item;
-        console.log(item)
-        currentExperiences.value.push(experience);
+}
+
+function getAllEducation(userId) {
+    educationServices.getAllForUser(userId).then((res) => {
+        res.data.forEach((item) => {
+            let education = item;
+            currentEducations.value.push(education);
+        });
     });
-});
-skillServices.getAllForUser(userId).then((res) => {
+}
+function getSelectedEducation(resumeId) {
+    resumeServices.getResumeEducations(resumeId).then((res) => {
+        console.log("Getting selected education for resume:" + resumeId)
+        res.data.forEach((item) => {
+            let education = item;
+            selectedEducations.value.push(education.educationId);
+        });
+        console.log("Here is the updated list with educationIds:" + selectedEducations.value);
+    });
+}
+
+
+function getAllExperiences(userId) {
+    experienceServices.getAllForUser(userId).then((res) => {
+        res.data.forEach((item) => {
+            let experience = item;
+            console.log(item)
+            currentExperiences.value.push(experience);
+        });
+    });
+}
+function getSelectedExperiences(resumeId) {
+    resumeServices.getResumeExperiences(resumeId).then((res) => {
+        console.log("Getting selected experience for resume:" + resumeId)
+        res.data.forEach((item) => {
+            let experience = item;
+            selectedExperiences.value.push(experience.experienceId);
+        });
+        console.log("Here is the updated list with experienceIds:" + selectedExperiences.value);
+    });
+}
+
+function getAllSkills(userId) {
+    skillServices.getAllForUser(userId).then((res) => {
+        res.data.forEach((item) => {
+            let skill = item;
+            console.log(item)
+            currentSkills.value.push(skill);
+        });
+    });
+}
+function getSelectedSkills(resumeId) {
+    resumeServices.getResumeSkills(resumeId).then((res) => {
+        console.log("Getting selected skills for resume:" + resumeId)
+        res.data.forEach((item) => {
+            let skill = item;
+            selectedSkills.value.push(skill.skillId);
+        });
+        console.log("Here is the updated list with SkillIds:" + selectedSkills.value);
+    });
+}
+projectServices.getAllForUser(userId).then((res) => {
     res.data.forEach((item) => {
-        let skill = item;
+        let project = item;
         console.log(item)
-        currentSkills.value.push(skill);
+        currentProjects.value.push(project);
     });
 });
 
@@ -341,11 +549,27 @@ v-row {
     margin-bottom: 10px;
 }
 
+.v-icon {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.v-icon:hover {
+    transform: scale(1.2);
+}
+
 v-col {
     padding: 5px;
 }
 
 .v-btn {
     margin-top: 20px;
+}
+
+.selected-card {
+    background-color: #03203f;
+    color: white;
+    border: 2px solid #1565c0;
+    cursor: pointer;
 }
 </style>

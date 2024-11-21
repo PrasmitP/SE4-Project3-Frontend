@@ -15,14 +15,15 @@ import { createVuetify } from 'vuetify'
 const customTheme = {
   dark: true,
   colors: {
-    background: '#1C1C1E',   // Deep Black-Gray
-    surface: '#2C2C2E',      // Dark Charcoal
-    primary: '#3A3D5C',      // Deep Indigo
-    secondary: '#50597B',    // Steel Blue Gray
-    accent: '#4A707A',       // Muted Teal
-    button: '#606B9A',       // Slate Blue
-    text: '#FFFFFF',         // White
-    subtext: '#A0A0A5',      // Light Gray
+    background: '#0E0E0F',   // Almost black, for a sleek and minimal appearance.
+    surface: '#151516',      // Slightly lighter for panels and cards.
+    primary: '#212538',      // Deep, muted navy for primary elements.
+    secondary: '#2E3348',    // Darker and more subdued for secondary elements.
+    selected: '#424A68',     // Brighter than primary but more distinct from secondary.
+    unselected: '#2E3348',   // Blends seamlessly with secondary while remaining lighter than selected.
+    button: '#4A547A',       // Noticeable yet muted for actions.
+    text: '#FAFAFA',         // Close to pure white for high readability on dark backgrounds.
+    subtext: '#A0A0A5',      // Softer, slightly muted grey for secondary text.    
   },
 }
 

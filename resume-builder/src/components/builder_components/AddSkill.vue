@@ -5,16 +5,35 @@
             <v-container class="justify-center">
                 <v-card color="primary" max-width="95vw">
                     <v-card-title>Add Skill</v-card-title>
+                    
+                    <!-- Skill or Language Selection -->
                     <v-radio-group v-model="skill.isLanguage" inline>
-                        <v-radio label="Skill"></v-radio>
-                        <v-radio label="Language"></v-radio>
+                        <v-radio :value="false" label="Skill"></v-radio>
+                        <v-radio :value="true" label="Language"></v-radio>
                     </v-radio-group>
-                    <v-text-field v-model="skill.title" label="Skill" type="text"></v-text-field>
-                    <v-text-field v-model="skill.title" label="Language"></v-text-field>
-                    <v-select v-model="skill.proficiencyLevel" label="Proficiency Level" :items="proficiencyLevels"></v-select>
-                    <v-btn>+</v-btn>
+
+                    <!-- Conditional Rendering Based on Selection -->
+                    <v-text-field
+                        v-if="!skill.isLanguage"
+                        v-model="skill.title"
+                        label="Skill"
+                        type="text"
+                    ></v-text-field>
+                    
+                    <template v-else>
+                        <v-text-field
+                            v-model="skill.title"
+                            label="Name of Language"
+                            type="text"
+                        ></v-text-field>
+                        <v-select
+                            v-model="skill.proficiencyLevel"
+                            label="Proficiency Level"
+                            :items="proficiencyLevels"
+                        ></v-select>
+                    </template>
+                    <v-btn @click="saveSkill">Save</v-btn>
                 </v-card>
-                <v-btn @click="saveSkill">Save</v-btn>
             </v-container>
         </template>
     </v-dialog>

@@ -21,6 +21,7 @@
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { generatePDF } from '@/services/PDFDownloader';
+import resumeServices from '@/services/resumeServices';
 
 const props = defineProps({
     resumeObject: {
@@ -38,10 +39,18 @@ let previewResume = ref(false);
 let showIconRow = ref(false);
 
 const router = useRouter();
-const goToBuild = () => {router.push('/build');}
-const goToEdit = () => {router.push('/edit/' + resumeId);}
-const downloadPDF = () => {generatePDF(resumeObject);}
-const deleteResume = () => {console.log("delete resume");}
+const goToBuild = () => { router.push('/build'); }
+const goToEdit = () => { router.push('/edit/' + resumeId); }
+const downloadPDF = () => { generatePDF(resumeObject); }
+const deleteResume = () => {
+    resumeServices.delete(resumeId)
+        .then(() => {
+            console.log("Resume deleted");
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}
 </script>
 
 <style scoped>
