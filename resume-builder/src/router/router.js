@@ -28,7 +28,7 @@ const router = createRouter({
       props: true,
     },
     {
-      path:"/build/saved", // this is a route for saved resumes, should probably be changed later
+      path:"/build/saved/:id", 
       name: "saved",
       component: SavedResumeView,
       props: true,
