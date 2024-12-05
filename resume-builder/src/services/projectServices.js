@@ -16,7 +16,7 @@ export default {
   update(id, data) {
     return apiClient.put(`/projects/${id}`, data);
   },
-  updateRelation(projectId, data) {
+  updateRelation(projectId, data) {         // updates the resumeprojects selected
     return apiClient.put(`/projects/updateRelation/${projectId}`, data);
   },
   delete(id) {
