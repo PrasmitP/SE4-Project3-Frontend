@@ -5,7 +5,10 @@ export default {
     return apiClient.get("/user");
   },
   getUserForId(userId) {
-    return apiClient.get(`/user/${userId}`);
+    return apiClient.get(`/user/id/${userId}`);
+  },
+  getUserForName(userName) {
+    return apiClient.get(`/user/name/${userName}`); //make sure user name has spaces in the form %20
   },
   update(userId, data) {
     return apiClient.put(`/user/${userId}`, data);
