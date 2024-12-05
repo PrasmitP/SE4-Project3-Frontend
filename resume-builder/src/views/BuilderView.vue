@@ -156,9 +156,6 @@
                     </v-card>
                 </v-card>
 
-                <!-- Conditional Sections for Template 1, 3, and 4 -->
-
-
                 <!-- (templates 1, 3 and 4): Skills Section -->
                 <v-card color="secondary" v-if="selectedTemplate != 2" class="mb-4">
                 
@@ -199,32 +196,48 @@
                 </v-card>
 
 
-                <!-- (template 4 only) Honors/Awards/Certifications Section -->
+                <!-- (template 4 only) Honors/Awards Section -->
                 <v-card color="primary" v-if="selectedTemplate == 4" class="mb-4">
                 
                     <v-card-title>
-                        <h2>Honors/Awards/Certifications</h2>
+                        <v-row>
+                            <h2>Honors/Awards</h2>
+                            <v-spacer/>
+                            <add-award :userId="userId" :awardList="currentAwards" mode="add"
+                            @refresh-data="refreshAwardData"/>
+                        </v-row>
                     </v-card-title>
-                    <v-row>
-                        <v-col v-for="award in currentAwards" cols="4">
-                            <v-card class="mb-2">
-                                <v-card-title>
-                                    <h3>{{ award.title }}</h3>
-                                </v-card-title>
-                                <v-card-text>
-                                    <p>{{ award.startDate }}</p>
-                                    <p>{{ award.endDate }}</p>
-                                    <p>{{ award.description }}</p>
-                                </v-card-text>
-                            </v-card>
-                        </v-col>
-                    </v-row>
-                    <add-award />
+                    <v-card color="transparent" class="mb-3">
+                        <v-row>
+                            <v-col v-for="award in currentAwards" cols="6">
+                                <v-card :color="selectedAwards.includes(award.awardId) ? 'selected' : 'unselected'"
+                                    :elevation="selectedAwards.includes(award.awardId) ? 10 : 2"
+                                    @click="awardSelection(award.awardId)" class="mb-2">
+                                    <v-card-title>
+                                        <v-row>
+                                            <v-spacer/>
+                                            <add-award :userId="userId" :awardList="currentAwards"
+                                                mode="edit" :awardToEdit="award" @refresh-data="refreshAwardData" />
+                                            <v-icon @click="deleteAward(award.awardId)">mdi-delete</v-icon>
+                                        </v-row>
+                                    </v-card-title>
+                                    <v-card-text>
+                                        <h3>{{ award.title }}</h3>
+                                    </v-card-text>
+                                    <v-card-text>
+                                        <p>{{ award.startDate }}</p>
+                                        <p>{{ award.endDate }}</p>
+                                        <p>{{ award.description }}</p>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </v-card>
                 </v-card>
 
                 <!-- Template 4: Projects Section -->
 
-                <v-card color="secondary" v-if="selectedTemplate === 4" class="mb-4">
+                <v-card color="secondary" v-if="selectedTemplate === 3" class="mb-4">
                     <v-card-title>
                         <v-row>
                             <h2>Projects</h2>
@@ -244,8 +257,7 @@
                                         <v-row>
                                             <v-spacer/>
                                             <add-project :userId="userId" :projectList="currentProjects"
-                                                mode="edit" :projectToEdit="project"
-                                                @refresh-data="refreshProjectData" />
+                                                mode="edit" :projectToEdit="project" @refresh-data="refreshProjectData" />
                                             <v-icon @click="deleteProject(project.projectId)">mdi-delete</v-icon>
                                         </v-row>
                                     </v-card-title>
@@ -414,14 +426,40 @@ const projectSelection = (projectId) => {
                 selectedProjects.value = selectedProjects.value.filter(pro => pro !== projectId);
                 console.log(`Removed project from resume. projectId: ${projectId}`);
             }
-            console.log(`Updated list: ${selectedSkills.value}`);
+            console.log(`Updated list: ${selectedProjects.value}`);
         });
     };
 
     if (selectedProjects.value.includes(projectId)) {
         if (resumeId) updateSelection('remove');
+        else selectedProjects.value = selectedProjects.value.filter(pro => pro !== projectId);
     } else {
         if (resumeId) updateSelection('add');
+        else selectedProjects.value.push(projectId);
+    }
+};
+
+const awardSelection = (awardId) => {
+    const updateSelection = (action) => {
+        let body = action === 'add' ? { addResumeId: resumeId } : { removeResumeId: resumeId };
+        awardServices.updateRelation(awardId, body).then(() => {
+            if (action === 'add') {
+                selectedAwards.value.push(awardId);
+                console.log(`Added award to resume. awardId: ${awardId}`);
+            } else {
+                selectedAwards.value = selectedAwards.value.filter(awa => awa !== awardId);
+                console.log(`Removed award from resume. awardId: ${awardId}`);
+            }
+            console.log(`Updated list: ${selectedAwards.value}`);
+        });
+    };
+
+    if (selectedAwards.value.includes(awardId)) {
+        if (resumeId) updateSelection('remove');
+        else selectedAwards.value = selectedAwards.value.filter(awa => awa !== awardId);
+    } else {
+        if (resumeId) updateSelection('add');
+        else selectedAwards.value.push(awardId);
     }
 };
 
@@ -459,16 +497,15 @@ getAllSkills(userId);
 
 let currentProjects = ref([])
 let selectedProjects = ref([]);
-getSelectedProjects(resumeId);
+if (resumeId) getSelectedProjects(resumeId);
 getAllProjects(userId);
-
 
 let currentAwards = ref([])
 let selectedAwards = ref([]);
 if (resumeId) getSelectedAwards(resumeId);
 getAllAwards(userId);
 
-getAllProjects(userId);
+
 // functions that send requests to backend
 let router = useRouter();
 
@@ -485,7 +522,8 @@ let createResume = () => {
             let newSelections = {
                 educationId: selectedEducations.value,
                 experienceId: selectedExperiences.value,
-                skillId: selectedSkills.value
+                skillId: selectedSkills.value,
+                projectId: selectedProjects.value
             }
             resumeServices.addResumeEducations(newResumeId, newSelections)
                 .then((response) => {
@@ -493,6 +531,34 @@ let createResume = () => {
                 })
                 .catch((error) => {
                     console.error("Error adding educations to resume:", error);
+                });
+                resumeServices.addResumeExperiences(newResumeId, newSelections)
+                .then((response) => {
+                    console.log("Added experiences to resume:", response);
+                })
+                .catch((error) => {
+                    console.error("Error adding experiences to resume:", error);
+                });
+                resumeServices.addResumeSkills(newResumeId, newSelections)
+                .then((response) => {
+                    console.log("Added skills to resume:", response);
+                })
+                .catch((error) => {
+                    console.error("Error adding skills to resume:", error);
+                });
+                resumeServices.addResumeProjects(newResumeId, newSelections)
+                .then((response) => {
+                    console.log("Added projects to resume:", response);
+                })
+                .catch((error) => {
+                    console.error("Error adding projects to resume:", error);
+                });
+                resumeServices.addResumeAwards(newResumeId, newSelections)
+                .then((response) => {
+                    console.log("Added awards to resume:", response);
+                })
+                .catch((error) => {
+                    console.error("Error adding awards to resume:", error);
                 });
             router.push("/build/saved/" + newResumeId);
         })
@@ -516,12 +582,14 @@ let saveResume = () => {
 let selectedExperience = ref(null);
 let selectedExperienceId = ref(null);
 
-
 let selectedSkill = ref(null);
 let selectedSkillId = ref(null);
 
 let selectedProject = ref(null);
 let selectedProjectId = ref(null);
+
+let selectedAward = ref(null);
+let selectedAwardId = ref(null);
 
 let deleteEducation = (educationId) => {
     educationServices.delete(educationId)
@@ -615,6 +683,30 @@ let refreshProjectData = () => {
         });
 };
 
+let deleteAward = (awardId) => {
+    awardServices.delete(awardId)
+        .then((response) => {
+            console.log("Award deleted:", response);
+            refreshAwardData();
+            selectedAwardId.value = null;
+            selectedAward.value = null;
+        })
+        .catch((error) => {
+            console.error("Error deleting award:", error);
+        })
+}
+
+let refreshAwardData = () => {
+    awardServices.getAllForUser(userId)
+        .then((res) => {
+            currentAwards.value = res.data;
+            console.log("Award data refreshed:", currentAwards.value);
+        })
+        .catch((err) => {
+            console.error("Error refreshing award data:", err);
+        });
+};
+
 
 
 // getting user's data from the backend
@@ -646,6 +738,7 @@ function getResumeData(resumeId) {
 }
 
 function getAllEducation(userId) {
+    console.log("Getting all educations for user:" + userId)
     educationServices.getAllForUser(userId).then((res) => {
         res.data.forEach((item) => {
             let education = item;
@@ -707,6 +800,7 @@ function getSelectedSkills(resumeId) {
 }
 
 function getAllProjects(userId) {
+    console.log("Getting all projects for user:" + userId)
     projectServices.getAllForUser(userId).then((res) => {
         res.data.forEach((item) => {
             let project = item;

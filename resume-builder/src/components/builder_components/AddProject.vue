@@ -64,13 +64,10 @@ const openDialog = () => {
   } else {
     // Clear project object for adding
     project.value = {
-    companyName: '',
-    jobRole: '',
-    city: '',
-    state: '',
-    startDate: '',
-    endDate: '',
-    userId: props.userId,
+      projectName: '',
+      startDate: '',
+      endDate: '',
+      userId: userId,
     };
   }
   showProjectDialog.value = true;
