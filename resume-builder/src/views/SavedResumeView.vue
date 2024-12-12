@@ -49,9 +49,9 @@ function getResumeData(resumeId) {
         resumeServices.getResumeSkills(resumeId).then((res) => {
             resumeData.value.skills = res.data;
         });
-        // resumeServices.getResumeProjects(resumeId).then((res) => {
-        //     resumeData.value.projects = res.data;
-        // });
+        resumeServices.getResumeProjects(resumeId).then((res) => {
+            resumeData.value.projects = res.data;
+        });
         resumeServices.getResumeAwards(resumeId).then((res) => {
             resumeData.value.awards = res.data;
         });

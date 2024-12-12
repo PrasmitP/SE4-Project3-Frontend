@@ -12,24 +12,24 @@ import { generateTemplate4 } from '../templates/pdf/Template4pdf';
  * @param {String} templateId - The selected template ID (e.g., 1, 2).
  */
  export function generatePDF(resumeData) {
-    const doc = new jsPDF();
+    const doc = new jsPDF('p', 'mm', 'letter');
     let templateId = resumeData.template
     let fileName = resumeData.title
 
     switch (templateId) {
-        case "1":
+        case 1:
             generateTemplate1(doc, resumeData);
             break;
         
-        case "2":
+        case 2:
             generateTemplate2(doc, resumeData);
             break;
         
-        case "3":
+        case 3:
             generateTemplate3(doc, resumeData);
             break;
 
-        case "4":
+        case 4:
             generateTemplate4(doc, resumeData);
             break;
 

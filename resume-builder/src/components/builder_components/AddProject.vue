@@ -1,10 +1,11 @@
 <template>
-    <v-btn @click="() => showProjectAdd = true" color="button">Add Project</v-btn>
-    <v-dialog v-model="showProjectAdd">
-        <template v-slot:default="showProjectAdd">
-            <v-container class="justify-center">
-                <v-card color="primary" max-width="95vw">
-                    <v-card-title>Add Project</v-card-title>
+    <v-icon v-if="mode === 'add'" @click="openDialog" size="40px">mdi-plus</v-icon>
+    <v-icon v-else @click="openDialog">mdi-pencil</v-icon>
+
+    <v-dialog v-model="showProjectDialog">
+        <v-container class="justify-center">
+        <v-card color="primary" max-width="95vw">
+        <v-card-title>{{ mode === 'add' ? 'Add project' : 'Edit' }}</v-card-title>
                     <v-text-field v-model="project.projectName" label="Project Name *" type="text" required></v-text-field>
                     <v-row>
                         <v-col cols="2">
@@ -17,7 +18,6 @@
                 </v-card>
                 <v-btn @click="saveProject">Save</v-btn>
             </v-container>
-        </template>
     </v-dialog>
 </template>
 
@@ -25,7 +25,8 @@
 import { ref } from 'vue';
 import projectServices from '@/services/projectServices';
 
-let showProjectAdd = ref(false);
+const emit = defineEmits(["refresh-data"]);
+
 const props = defineProps({
     userId: {
         type: String,
@@ -34,9 +35,17 @@ const props = defineProps({
     projectList: {
         type: Array,
         required: true
-    }
+    },
+     mode: {
+        type: String,
+        default: "add",
+    },
+    projectToEdit: {
+        type: Object,
+        default: () => ({}),
+    },
 });
-let projectList = props.projectList;
+let showProjectDialog = ref(false);
 let userId = props.userId;
 
 let project = ref({
@@ -46,16 +55,59 @@ let project = ref({
     userId: userId,
 });
 
-const saveProject = () => {
-    console.log(project.value);
-    projectServices.create(project.value).then((res) => {
-        console.log(res);
-        projectList.push(project.value);
-        showProjectAdd.value = false;
-    }).catch((err) => {
-        console.log(err);
-    });
+
+// Open the dialog for add or edit
+const openDialog = () => {
+  if (props.mode === "edit") {
+    // Pre-fill project object for editing
+    project.value = { ...props.projectToEdit };
+  } else {
+    // Clear project object for adding
+    project.value = {
+      projectName: '',
+      startDate: '',
+      endDate: '',
+      userId: userId,
+    };
+  }
+  showProjectDialog.value = true;
 };
 
+// Save project (Add or Edit)
+const saveProject = () => {
+  if (props.mode === "add") {
+    // Add new project
+    projectServices
+      .create(project.value)
+      .then((res) => {
+        console.log("project added:", res);
+        props.projectList.push(project.value); // Update the list
+        showProjectDialog.value = false; // Close dialog
+        emit("refresh-data");
+      })
+      .catch((err) => {
+        console.error("Error adding project:", err);
+      });
+  } else if (props.mode === "edit") {
+    // Update existing project
+    projectServices
+      .update(project.value.projectId, project.value)
+      .then((res) => {
+        console.log("project updated:", res);
+        const index = props.projectList.findIndex(
+          (e) => e.projectId === project.value.projectId
+        );
+        if (index !== -1) {
+          props.projectList[index] = project.value; // Update the list
+        }
+        showProjectDialog.value = false; // Close dialog
+        emit("refresh-data");
+
+      })
+      .catch((err) => {
+        console.error("Error updating project:", err);
+      });
+  }
+};
 </script>
 <style scoped></style>

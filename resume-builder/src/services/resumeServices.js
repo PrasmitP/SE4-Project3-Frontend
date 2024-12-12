@@ -25,11 +25,26 @@ export default {
   getResumeExperiences(id) {
     return apiClient.get(`/resumes/${id}/experiences`);
   },
+  addResumeExperiences(id, data) {
+    return apiClient.post(`/resumes/${id}/experiences`, data);
+  },
   getResumeSkills(id) {
     return apiClient.get(`/resumes/${id}/skills`);
   },
+  addResumeSkills(id, data) {
+    return apiClient.post(`/resumes/${id}/skills`, data);
+  },
+  getResumeProjects(id) {
+    return apiClient.get(`/resumes/${id}/projects`);
+  },
+  addResumeProjects(id, data) {
+    return apiClient.post(`/resumes/${id}/projects`, data);
+  },
   getResumeAwards(id) {
     return apiClient.get(`/resumes/${id}/awards`);
+  },
+  addResumeAwards(id, data) {
+    return apiClient.post(`/resumes/${id}/awards`, data);
   },
   delete(id) {
     return apiClient.delete(`/resumes/${id}`);
