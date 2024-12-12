@@ -25,11 +25,11 @@ import { generateTemplate4 } from '../templates/pdf/Template4pdf';
             generateTemplate2(doc, resumeData);
             break;
         
-        case "3":
+        case 3:
             generateTemplate3(doc, resumeData);
             break;
 
-        case "4":
+        case 4:
             generateTemplate4(doc, resumeData);
             break;
 
