@@ -83,7 +83,7 @@ export function generateTemplate2(doc, resumeData) {
         let institutionName = education.institutionName;
         doc.text(`${institutionName}`, DEFAULT_MARGIN, currentY);
         doc.setFont("times", "normal");
-        doc.text(`| ${combined}`, DEFAULT_MARGIN + doc.getTextWidth(institutionName) + 2, currentY);
+        doc.text(`| ${combined}`, DEFAULT_MARGIN + doc.getTextWidth(institutionName) + 5, currentY);
 
         currentY += font_height + font_height * PARAGRAPH_SPACING;
 

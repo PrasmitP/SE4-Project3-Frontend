@@ -88,7 +88,7 @@ export function generateTemplate1(doc, resumeData) {
         let institutionName = education.institutionName;
         doc.text(`${institutionName}`, DEFAULT_MARGIN, currentY);
         doc.setFont("times", "normal");
-        doc.text(`${education.city}, ${education.state}`, DEFAULT_MARGIN + doc.getTextWidth(institutionName) + 2, currentY);
+        doc.text(`${education.city}, ${education.state}`, DEFAULT_MARGIN + doc.getTextWidth(institutionName) + 5, currentY);
 
 
         let startYear = education.startDate.split("-")[0];
